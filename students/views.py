@@ -181,3 +181,35 @@ def student_profile_edit(request):
         'form': form,
         'student': student
     })
+
+@login_required
+def student_results(request):
+    if not request.user.is_student:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        messages.error(request, "Student profile does not exist.")
+        return redirect('dashboard_home')
+        
+    gpa = student.semester_result_gpa
+    if gpa >= 9.0:
+        standing = 'Excellent (First Class Distinction)'
+        gpa_class = 'text-success'
+    elif gpa >= 7.5:
+        standing = 'Very Good (First Class)'
+        gpa_class = 'text-info'
+    elif gpa >= 5.0:
+        standing = 'Good (Second Class)'
+        gpa_class = 'text-warning'
+    else:
+        standing = 'Needs Improvement / Fail'
+        gpa_class = 'text-danger'
+        
+    return render(request, 'students/results.html', {
+        'student_profile': student,
+        'standing': standing,
+        'gpa_class': gpa_class
+    })

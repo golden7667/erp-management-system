@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Semester Results{% endblock %}
+{% block active_results %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h1>My Semester Results</h1>
+        <p class="subtitle text-muted">A summary of your academic grades, evaluation status, and attendance standing.</p>
+    </div>
+    <div>
+        <button class="btn btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Report Card</button>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Premium Report Card Visual -->
+    <div class="col-md-6 mb-4">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="min-height: 380px; position: relative; overflow: hidden; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1.5px solid rgba(99, 102, 241, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-radius: 16px;">
+            <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99,102,241,0.08); border-radius: 50%;"></div>
+            <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(14,165,233,0.05); border-radius: 50%;"></div>
+
+            <div>
+                <div class="brand d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center gap-2 text-white">
+                        <i class="fa-solid fa-graduation-cap" style="color: #6366f1; font-size: 1.25rem;"></i>
+                        <span style="font-size: 0.95rem; font-weight: 800; letter-spacing: 0.5px;">SMART COLLEGE ACADEMICS</span>
+                    </div>
+                    <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 0.75rem;">Official Record</span>
+                </div>
+
+                <div class="d-flex gap-4 align-items-center mb-4">
+                    {% if student_profile.photo %}
+                        <img src="{{ student_profile.photo.url }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;">
+                    {% else %}
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ user.username }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;">
+                    {% endif %}
+                    <div>
+                        <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h4>
+                        <span style="font-size: 0.8rem; color: #94a3b8;">Department of {{ student_profile.department.name|default:"Unassigned" }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-2" style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span style="color: #94a3b8; font-size: 0.85rem;">Roll Number:</span>
+                        <strong style="color: #fff; font-size: 0.85rem;"><code>{{ student_profile.roll_number }}</code></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span style="color: #94a3b8; font-size: 0.85rem;">Academic Year:</span>
+                        <strong style="color: #fff; font-size: 0.85rem;">2026 / 2027</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span style="color: #94a3b8; font-size: 0.85rem;">GPA Standing:</span>
+                        <strong class="{{ gpa_class }}" style="font-size: 0.85rem;">{{ standing }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex align-items-center justify-content-between p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.06);">
+                <div>
+                    <span style="color: #94a3b8; font-size: 0.75rem; display: block; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Semester GPA</span>
+                    <h2 class="m-0 text-white" style="font-size: 2.2rem; font-weight: 800;">{{ student_profile.semester_result_gpa }} <span style="font-size: 1rem; font-weight: 500; color: #64748b;">/ 10.0</span></h2>
+                </div>
+                <div class="text-end">
+                    <span style="color: #94a3b8; font-size: 0.75rem; display: block; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Attendance</span>
+                    <h3 class="m-0" style="font-weight: 800; color: var(--color-emerald);">{{ student_profile.attendance_percentage }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Card -->
+    <div class="col-md-6 mb-4">
+        <div class="table-card h-100 p-4">
+            <div class="card-header border-bottom pb-3 mb-3">
+                <h3 class="text-white"><i class="fa-solid fa-list-check text-indigo"></i> Continuous Evaluation Detail</h3>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="text-white mb-2" style="font-size: 0.95rem; font-weight: 600;">Academic Status Remarks</h5>
+                <div class="p-3 rounded bg-dark border" style="border-color: rgba(255,255,255,0.08) !important;">
+                    <p class="text-white m-0" style="font-size: 0.85rem; font-family: monospace; line-height: 1.5;">
+                        {{ student_profile.assessment_status }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="text-white mb-2" style="font-size: 0.95rem; font-weight: 600;">Attendance & Exam Eligibility</h5>
+                <div class="p-3 rounded" style="background: {% if student_profile.attendance_percentage >= 75.0 %}rgba(16, 185, 129, 0.05){% else %}rgba(239, 68, 68, 0.05){% endif %}; border: 1.5px solid {% if student_profile.attendance_percentage >= 75.0 %}rgba(16, 185, 129, 0.15){% else %}rgba(239, 68, 68, 0.15){% endif %};">
+                    <p class="m-0" style="font-size: 0.85rem; line-height: 1.5; color: {% if student_profile.attendance_percentage >= 75.0 %}var(--color-emerald){% else %}#ef4444{% endif %};">
+                        {% if student_profile.attendance_percentage >= 75.0 %}
+                            <i class="fa-solid fa-circle-check"></i> <strong>Eligible for End-Semester Exams</strong>. Your attendance ({{ student_profile.attendance_percentage }}%) is above the minimum required threshold of 75.0%.
+                        {% else %}
+                            <i class="fa-solid fa-circle-xmark"></i> <strong>Attendance Shortage Warning</strong>. Your attendance ({{ student_profile.attendance_percentage }}%) falls below the 75.0% minimum requirement. Please contact your department head or coordinator.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <h5 class="text-white mb-2" style="font-size: 0.95rem; font-weight: 600;">Quick Info</h5>
+                <p class="text-muted" style="font-size: 0.85rem; line-height: 1.6;">
+                    GPA is calculated based on continuous internal evaluation marks, final examinations, and coursework assignments. If there is a dispute regarding grading or remarks, please submit an application to your department faculty advisor.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

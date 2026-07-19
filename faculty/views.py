@@ -6,7 +6,7 @@ from django.db.models import Q, Count
 from .models import Faculty
 from .forms import FacultyForm, FacultyUserForm, FacultyProfileEditForm
 from accounts.models import User
-from students.models import Assignment, AssignmentSubmission
+from students.models import Student, Assignment, AssignmentSubmission
 from students.forms import AssignmentForm, GradeForm
 
 @login_required
@@ -191,5 +191,82 @@ def faculty_profile_edit(request):
         
     return render(request, 'faculty/profile_edit.html', {
         'form': form,
+        'faculty': faculty
+    })
+
+@login_required
+def faculty_attendance_manage(request):
+    if not request.user.is_faculty:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    try:
+        faculty = request.user.faculty_profile
+    except Faculty.DoesNotExist:
+        messages.error(request, "Faculty profile does not exist.")
+        return redirect('dashboard_home')
+        
+    students = Student.objects.filter(department=faculty.department).order_by('first_name', 'last_name')
+    
+    if request.method == 'POST':
+        for student in students:
+            attendance_key = f'attendance_{student.id}'
+            if attendance_key in request.POST:
+                try:
+                    val = float(request.POST[attendance_key])
+                    if 0.0 <= val <= 100.0:
+                        student.attendance_percentage = val
+                        student.save()
+                    else:
+                        messages.warning(request, f"Skipped invalid attendance value for {student.first_name}: {val}% (must be 0-100)")
+                except ValueError:
+                    messages.warning(request, f"Skipped non-numeric attendance value for {student.first_name}")
+        messages.success(request, "Attendance updated successfully!")
+        return redirect('faculty_attendance_manage')
+        
+    return render(request, 'faculty/attendance_manage.html', {
+        'students': students,
+        'faculty': faculty
+    })
+
+@login_required
+def faculty_results_manage(request):
+    if not request.user.is_faculty:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    try:
+        faculty = request.user.faculty_profile
+    except Faculty.DoesNotExist:
+        messages.error(request, "Faculty profile does not exist.")
+        return redirect('dashboard_home')
+        
+    students = Student.objects.filter(department=faculty.department).order_by('first_name', 'last_name')
+    
+    if request.method == 'POST':
+        for student in students:
+            gpa_key = f'gpa_{student.id}'
+            assessment_key = f'assessment_{student.id}'
+            
+            if gpa_key in request.POST:
+                try:
+                    val = float(request.POST[gpa_key])
+                    if 0.0 <= val <= 10.0:
+                        student.semester_result_gpa = val
+                    else:
+                        messages.warning(request, f"Skipped invalid GPA value for {student.first_name}: {val} (must be 0-10)")
+                except ValueError:
+                    messages.warning(request, f"Skipped non-numeric GPA value for {student.first_name}")
+            
+            if assessment_key in request.POST:
+                student.assessment_status = request.POST[assessment_key]
+            
+            student.save()
+            
+        messages.success(request, "Semester results updated successfully!")
+        return redirect('faculty_results_manage')
+        
+    return render(request, 'faculty/results_manage.html', {
+        'students': students,
         'faculty': faculty
     })

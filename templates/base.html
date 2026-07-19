@@ -51,6 +51,22 @@
                                     {% endif %}
                                 </li>
                             {% endif %}
+                            
+                            {% if user.is_student or user.is_faculty %}
+                                <li class="{% block active_results %}{% endblock %}">
+                                    {% if user.is_student %}
+                                        <a href="{% url 'student_results' %}"><i class="fa-solid fa-square-poll-vertical"></i> <span>Semester Results</span></a>
+                                    {% else %}
+                                        <a href="{% url 'faculty_results_manage' %}"><i class="fa-solid fa-square-poll-vertical"></i> <span>Manage Results</span></a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+
+                            {% if user.is_faculty %}
+                                <li class="{% block active_attendance %}{% endblock %}">
+                                    <a href="{% url 'faculty_attendance_manage' %}"><i class="fa-solid fa-calendar-days"></i> <span>Manage Attendance</span></a>
+                                </li>
+                            {% endif %}
                         {% endif %}
                     </ul>
                 </nav>

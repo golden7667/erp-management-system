@@ -11,4 +11,6 @@ urlpatterns = [
     path('assignments/<int:pk>/submissions/', views.view_submissions, name='view_submissions'),
     path('submissions/<int:submission_id>/grade/', views.grade_submission, name='grade_submission'),
     path('profile/edit/', views.faculty_profile_edit, name='faculty_profile_edit'),
+    path('attendance/', views.faculty_attendance_manage, name='faculty_attendance_manage'),
+    path('results/', views.faculty_results_manage, name='faculty_results_manage'),
 ]

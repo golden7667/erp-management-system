@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Manage Results{% endblock %}
+{% block active_results %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Manage Semester Results</h1>
+        <p class="subtitle text-muted">Update GPA results and academic assessment remarks for students in the {{ faculty.department.name }} department.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fa-solid fa-square-poll-vertical"></i> Student Results Cohort</h3>
+                <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: var(--color-blue);">{{ students|length }} Enrolled</span>
+            </div>
+
+            <form method="post" class="p-3">
+                {% csrf_token %}
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Roll Number</th>
+                                <th style="width: 180px;">GPA (Out of 10.0)</th>
+                                <th style="width: 320px;">Continuous Assessment Status</th>
+                                <th>Standing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if students %}
+                                {% for student in students %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-white">{{ student.first_name }} {{ student.last_name }}</strong>
+                                    </td>
+                                    <td>
+                                        <code>{{ student.roll_number }}</code>
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="gpa_{{ student.id }}" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" step="0.01" min="0" max="10" value="{{ student.semester_result_gpa }}" required>
+                                            <span class="input-group-text" style="background: var(--bg-secondary); color: var(--text-muted); border-color: var(--border-color);">/10</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="assessment_{{ student.id }}" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="{{ student.assessment_status }}" placeholder="e.g. All Cleared (Internal Assessments)" required>
+                                    </td>
+                                    <td>
+                                        {% if student.semester_result_gpa >= 9.0 %}
+                                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald); font-weight: 700;">Outstanding (O)</span>
+                                        {% elif student.semester_result_gpa >= 7.5 %}
+                                            <span class="badge" style="background: rgba(14, 165, 233, 0.1); color: var(--color-blue); font-weight: 700;">Excellent (A)</span>
+                                        {% elif student.semester_result_gpa >= 5.0 %}
+                                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--color-amber); font-weight: 700;">Average (B)</span>
+                                        {% else %}
+                                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: 700;">Needs Work</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>
+                                        No students registered in your department.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Results Records
+                    </button>
+                    <a href="{% url 'dashboard_home' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Manage Attendance{% endblock %}
+{% block active_attendance %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Manage Attendance Records</h1>
+        <p class="subtitle text-muted">Update the attendance percentages for all students in the {{ faculty.department.name }} department.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fa-solid fa-calendar-days"></i> Student Attendance Cohort</h3>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-emerald);">{{ students|length }} Enrolled</span>
+            </div>
+
+            <form method="post" class="p-3">
+                {% csrf_token %}
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Roll Number</th>
+                                <th style="width: 200px;">Current Attendance</th>
+                                <th style="width: 250px;">Update Percentage (%)</th>
+                                <th>Status Alert</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if students %}
+                                {% for student in students %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-white">{{ student.first_name }} {{ student.last_name }}</strong>
+                                    </td>
+                                    <td>
+                                        <code>{{ student.roll_number }}</code>
+                                    </td>
+                                    <td>
+                                        <strong class="text-white">{{ student.attendance_percentage }}%</strong>
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="attendance_{{ student.id }}" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" step="0.1" min="0" max="100" value="{{ student.attendance_percentage }}" required>
+                                            <span class="input-group-text" style="background: var(--bg-secondary); color: var(--text-muted); border-color: var(--border-color);">%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if student.attendance_percentage >= 75.0 %}
+                                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald);"><i class="fa-solid fa-circle-check"></i> Safe</span>
+                                        {% else %}
+                                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> De-barred warning</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>
+                                        No students registered in your department.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Attendance Records
+                    </button>
+                    <a href="{% url 'dashboard_home' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
