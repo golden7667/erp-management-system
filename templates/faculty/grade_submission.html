@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Grade Submission{% endblock %}
+{% block active_assignments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Grade Submission</h1>
+        <p class="subtitle text-muted">Input grade evaluation for student {{ submission.student.first_name }} {{ submission.student.last_name }}.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="table-card p-4">
+            <div class="border-bottom pb-3 mb-4">
+                <h3 class="text-white">{{ submission.assignment.title }}</h3>
+                <div class="text-muted mb-2">Submitted by: <strong>{{ submission.student.first_name }} {{ submission.student.last_name }}</strong> ({{ submission.student.roll_number }})</div>
+                <div style="font-size: 0.85rem;" class="text-warning">
+                    <i class="fa-solid fa-file-arrow-down me-1"></i> Submitted File: 
+                    <a href="{{ submission.submitted_file.url }}" class="alert-link text-white" target="_blank">{{ submission.submitted_file.name }}</a>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Grade / Score</label>
+                    {{ form.grade }}
+                    <div class="form-text text-muted mt-1">E.g., A+, B, 95/100, 9.5</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted">Feedback Remarks</label>
+                    {{ form.feedback }}
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-check"></i> Submit Evaluation
+                    </button>
+                    <a href="{% url 'view_submissions' pk=submission.assignment.id %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Student Dashboard{% endblock %}
+{% block active_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Student Dashboard</h1>
+        <p class="subtitle text-muted">View your profile, ID card, and academic allocations.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="table-card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fa-solid fa-user-graduate"></i> My Profile Details</h3>
+                <a href="{% url 'student_profile_edit' %}" class="btn btn-outline btn-sm" style="border-color: var(--primary-color); color: #fff; background: var(--primary-gradient);"><i class="fa-solid fa-user-pen"></i> Edit Profile</a>
+            </div>
+            
+            <div class="p-3">
+                {% if student_profile %}
+                <div class="text-center mb-4">
+                    {% if student_profile.photo %}
+                        <img src="{{ student_profile.photo.url }}" alt="Profile Photo" class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ user.username }}" alt="Default Photo" class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% endif %}
+                </div>
+                
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td class="text-muted" style="width: 35%;">Full Name:</td>
+                            <td><strong>{{ student_profile.first_name }} {{ student_profile.last_name }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Roll Number:</td>
+                            <td><code>{{ student_profile.roll_number }}</code></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Department:</td>
+                            <td>{{ student_profile.department.name|default:"Unassigned" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Email:</td>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Phone:</td>
+                            <td>{{ student_profile.phone_number|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Address:</td>
+                            <td>{{ student_profile.address|default:"-" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="alert alert-warning text-center">
+                    Your student profile has not been created yet by the administrator.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        {% if student_profile %}
+        <div class="table-card h-100">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-id-card"></i> Student ID Card</h3>
+            </div>
+            
+            <div class="p-4 d-flex justify-content-center">
+                <!-- Premium ID Card Mock -->
+                <div class="id-card-layout text-white p-4" style="width: 320px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(99,102,241,0.15); border-radius: 50%;"></div>
+                    
+                    <div class="brand d-flex align-items-center gap-2 mb-3">
+                        <i class="fa-solid fa-graduation-cap" style="color: #6366f1;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 800; letter-spacing: 0.5px;">SMART COLLEGE</span>
+                    </div>
+                    
+                    <div class="d-flex gap-3 align-items-center mb-3">
+                        {% if student_profile.photo %}
+                            <img src="{{ student_profile.photo.url }}" alt="Photo" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.2);">
+                        {% else %}
+                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ user.username }}" alt="Photo" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.2);">
+                        {% endif %}
+                        <div>
+                            <h5 style="margin: 0; font-size: 0.95rem; font-weight: 700;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h5>
+                            <span class="text-muted" style="font-size: 0.75rem; color: #94a3b8 !important;">Student / {{ student_profile.department.name|default:"Unassigned" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 12px; font-size: 0.8rem;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="color: #94a3b8;">Roll Number:</span>
+                            <strong style="color: #f8fafc;">{{ student_profile.roll_number }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span style="color: #94a3b8;">Issue Date:</span>
+                            <strong style="color: #f8fafc;">July 2026</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if student_profile %}
+<!-- New Row: Academic & Financial Metrics -->
+<div class="row mt-4">
+    <!-- Attendance Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
+            <div class="brand d-flex align-items-center justify-content-between">
+                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-calendar-check" style="color: var(--color-emerald);"></i> ATTENDANCE</span>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald); font-size: 0.75rem;">Active Sem</span>
+            </div>
+            <div class="my-3">
+                <h2 style="font-size: 2.2rem; font-weight: 800; margin: 0; color: var(--text-primary);">{{ student_profile.attendance_percentage }}%</h2>
+                <div class="progress mt-2" style="height: 6px; background: var(--bg-tertiary); border-radius: 3px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ student_profile.attendance_percentage }}%; background: var(--color-emerald); border-radius: 3px;" aria-valuenow="{{ student_profile.attendance_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <span class="text-muted" style="font-size: 0.8rem;">
+                {% if student_profile.attendance_percentage >= 75.0 %}
+                    <i class="fa-solid fa-circle-check" style="color: var(--color-emerald);"></i> Safe: Above 75% requirement
+                {% else %}
+                    <i class="fa-solid fa-triangle-exclamation" style="color: var(--color-amber);"></i> Warning: Below 75% requirement
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- GPA Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
+            <div class="brand d-flex align-items-center justify-content-between">
+                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-chart-bar" style="color: var(--color-blue);"></i> SEMESTER RESULT</span>
+                <span class="badge" style="background: rgba(14, 165, 233, 0.1); color: var(--color-blue); font-size: 0.75rem;">GPA</span>
+            </div>
+            <div class="my-3">
+                <h2 style="font-size: 2.2rem; font-weight: 800; margin: 0; color: var(--text-primary);">{{ student_profile.semester_result_gpa }} / 10.0</h2>
+                <div class="progress mt-2" style="height: 6px; background: var(--bg-tertiary); border-radius: 3px;">
+                    <div class="progress-bar" role="progressbar" style="width: {% widthratio student_profile.semester_result_gpa 1 10 %}%; background: var(--color-blue); border-radius: 3px;" aria-valuenow="{{ student_profile.semester_result_gpa }}" aria-valuemin="0" aria-valuemax="10"></div>
+                </div>
+            </div>
+            <span class="text-muted" style="font-size: 0.8rem;"><i class="fa-solid fa-award" style="color: var(--color-blue);"></i> Standing: Excellent Academic Status</span>
+        </div>
+    </div>
+
+    <!-- Fees Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
+            <div class="brand d-flex align-items-center justify-content-between">
+                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-credit-card" style="color: var(--color-violet);"></i> SEMESTER FEE</span>
+                {% if student_profile.semester_fee_status == 'PAID' %}
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald); font-size: 0.75rem;">Paid</span>
+                {% elif student_profile.semester_fee_status == 'PENDING' %}
+                    <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--color-amber); font-size: 0.75rem;">Pending</span>
+                {% else %}
+                    <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 0.75rem;">Overdue</span>
+                {% endif %}
+            </div>
+            <div class="my-3">
+                <h2 style="font-size: 2.0rem; font-weight: 800; margin: 0; color: var(--text-primary);">₹{{ student_profile.semester_fee_amount }}</h2>
+                <p class="text-muted" style="font-size: 0.8rem; margin: 4px 0 0 0;">Semester Tuition Fee</p>
+            </div>
+            <span class="text-muted" style="font-size: 0.8rem;">
+                {% if student_profile.semester_fee_status == 'PAID' %}
+                    <i class="fa-solid fa-circle-check" style="color: var(--color-emerald);"></i> No outstanding dues
+                {% else %}
+                    <i class="fa-solid fa-circle-info" style="color: var(--color-amber);"></i> Due: Next 15 days
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- Assessment Card -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
+            <div class="brand d-flex align-items-center justify-content-between">
+                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--color-amber);"></i> ASSESSMENTS</span>
+                <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--color-amber); font-size: 0.75rem;">Internal</span>
+            </div>
+            <div class="my-3">
+                <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-primary); line-height: 1.4;">{{ student_profile.assessment_status }}</h4>
+                <p class="text-muted" style="font-size: 0.8rem; margin: 4px 0 0 0;">Continuous Evaluation</p>
+            </div>
+            <span class="text-muted" style="font-size: 0.8rem;"><i class="fa-solid fa-clipboard-check" style="color: var(--color-amber);"></i> Status: Updated by faculty</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

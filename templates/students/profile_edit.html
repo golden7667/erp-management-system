@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Edit Profile{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Edit Profile Details</h1>
+        <p class="subtitle text-muted">Update your student information, email address, and profile picture.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <h4 class="mb-4 text-white border-bottom pb-2"><i class="fa-solid fa-user-gear text-indigo"></i> Personal Profile</h4>
+                
+                {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    Please correct the errors below.
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted" for="id_first_name">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted" for="id_last_name">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted" for="id_email">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted" for="id_phone_number">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ form.phone_number.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted" for="id_address">Residential Address</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ form.address.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-muted" for="id_photo">Change Profile Photo</label>
+                        {{ form.photo }}
+                        {% if form.photo.errors %}
+                            <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ form.photo.errors.0 }}</div>
+                        {% endif %}
+                        {% if student.photo %}
+                            <div class="mt-2 text-muted" style="font-size: 0.85rem;">
+                                Current photo: <a href="{{ student.photo.url }}" target="_blank" style="color: var(--color-blue);">{{ student.photo.name }}</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-save"></i> Save Changes
+                    </button>
+                    <a href="{% url 'dashboard_home' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

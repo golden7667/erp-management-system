@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Manage Assignments{% endblock %}
+{% block active_assignments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Manage Coursework Assignments</h1>
+        <p class="subtitle text-muted">Create assignments for departments and grade student submissions.</p>
+    </div>
+    <div>
+        <a href="{% url 'add_assignment' %}" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+            <i class="fa-solid fa-plus"></i> Create Assignment
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fa-solid fa-folder-open"></i> Assignments List</h3>
+                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-color);">{{ assignments|length }} Created</span>
+            </div>
+
+            <div class="table-responsive p-3">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Assignment Title</th>
+                            <th>Description</th>
+                            <th>Department</th>
+                            <th>Due Date</th>
+                            <th>Submissions</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assignments %}
+                            {% for a in assignments %}
+                            <tr>
+                                <td>
+                                    <strong class="text-white">{{ a.title }}</strong>
+                                    {% if a.attachment %}
+                                        <a href="{{ a.attachment.url }}" target="_blank" class="ms-2" title="Download Attachment Reference" style="color: var(--color-amber);">
+                                            <i class="fa-solid fa-paperclip"></i>
+                                        </a>
+                                    {% endif %}
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Created on {{ a.created_at|date:"M d, Y" }}</div>
+                                </td>
+                                <td style="max-width: 300px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    {{ a.description }}
+                                </td>
+                                <td>
+                                    <span class="badge" style="background: rgba(14, 165, 233, 0.1); color: var(--color-blue);">{{ a.department.code|default:"All" }}</span>
+                                </td>
+                                <td style="font-size: 0.85rem;">
+                                    <i class="fa-regular fa-clock text-muted me-1"></i>
+                                    {{ a.due_date|date:"M d, Y H:i" }}
+                                </td>
+                                <td>
+                                    <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald); font-weight: 700; font-size: 0.8rem;">
+                                        {{ a.submission_count }} Submitted
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'view_submissions' pk=a.id %}" class="btn btn-outline btn-sm" style="border-color: var(--primary-color); color: #fff; background: var(--primary-gradient);">
+                                        <i class="fa-solid fa-list-check"></i> View Submissions & Grade
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="fa-solid fa-clipboard-question fa-2x mb-2 d-block"></i>
+                                    No assignments created yet. Click the button to add one!
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

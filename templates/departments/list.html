@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Departments List{% endblock %}
+{% block active_departments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Academic Departments</h1>
+        <p class="subtitle text-muted">Manage college branches, course allocations, and descriptions.</p>
+    </div>
+    {% if user.is_admin %}
+    <a href="{% url 'department_add' %}" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 20px; border-radius: 10px;">
+        <i class="fa-solid fa-plus"></i> Add Department
+    </a>
+    {% endif %}
+</div>
+
+<!-- Link to FastAPI Docs Alert -->
+<div class="alert alert-info d-flex justify-content-between align-items-center p-3 mb-4" style="background-color: rgba(99, 102, 241, 0.1); border: 1.5px solid rgba(99, 102, 241, 0.2); border-radius: 12px; color: var(--text-primary);">
+    <div>
+        <h5 class="mb-1 text-white"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> FastAPI Interactive Docs</h5>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">Use the FastAPI Swagger interface to inspect database endpoints asynchronously.</span>
+    </div>
+    <a href="/fastapi/docs" target="_blank" class="btn btn-outline btn-sm"><i class="fa-solid fa-rocket"></i> Open Swagger docs</a>
+</div>
+
+<!-- Departments Table -->
+<div class="table-card">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-network-wired"></i> Registered Departments</h3>
+    </div>
+    <div class="card-table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Department Name</th>
+                    <th>Branch Code</th>
+                    <th>Description</th>
+                    {% if user.is_admin %}
+                    <th>Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for dept in departments %}
+                <tr>
+                    <td><strong>{{ dept.name }}</strong></td>
+                    <td><code>{{ dept.code }}</code></td>
+                    <td>{{ dept.description|default:"No description provided." }}</td>
+                    {% if user.is_admin %}
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'department_edit' dept.pk %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
+                            <a href="{% url 'department_delete' dept.pk %}" class="btn btn-outline btn-sm text-danger border-danger" onclick="return confirm('Are you sure you want to delete this department?')"><i class="fa-solid fa-trash"></i> Delete</a>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-muted text-center">No departments registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

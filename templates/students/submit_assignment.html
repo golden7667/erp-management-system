@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Submit Assignment{% endblock %}
+{% block active_assignments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Submit Assignment</h1>
+        <p class="subtitle text-muted">Upload coursework file for "{{ assignment.title }}".</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="table-card p-4">
+            <div class="border-bottom pb-3 mb-4">
+                <h3 class="text-white">{{ assignment.title }}</h3>
+                <p class="text-muted mb-2">{{ assignment.description }}</p>
+                <div style="font-size: 0.85rem;" class="text-warning">
+                    <i class="fa-regular fa-clock me-1"></i> Due by: {{ assignment.due_date|date:"M d, Y H:i" }}
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted">Select Assignment File</label>
+                    {{ form.submitted_file }}
+                    <div class="form-text text-muted mt-2">Please upload PDFs, ZIPs, or document formats as required.</div>
+                </div>
+
+                {% if submission %}
+                    <div class="alert alert-info py-2 px-3 mb-4" style="font-size: 0.85rem;">
+                        <i class="fa-solid fa-circle-info"></i> You already submitted: 
+                        <a href="{{ submission.submitted_file.url }}" class="alert-link text-white ms-1" target="_blank">{{ submission.submitted_file.name }}</a>
+                        on {{ submission.submitted_at|date:"M d, Y H:i" }}. Re-submitting will replace the old file.
+                    </div>
+                {% endif %}
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Submit coursework
+                    </button>
+                    <a href="{% url 'student_assignments' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

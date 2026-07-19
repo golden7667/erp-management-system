@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Add Department{% endblock %}
+{% block active_departments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Add New Department</h1>
+        <p class="subtitle text-muted">Register a new branch or academic course track.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <h4 class="mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-network-wired"></i> Branch Details</h4>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Department Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Computer Science & Engineering" required style="background: rgba(0,0,0,0.15); border-color: var(--border-color); color: #fff;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Branch Code</label>
+                    <input type="text" name="code" class="form-control" placeholder="e.g. CSE" required style="background: rgba(0,0,0,0.15); border-color: var(--border-color); color: #fff;">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted">Description</label>
+                    <textarea name="description" rows="4" class="form-control" placeholder="Enter branch description details..." style="background: rgba(0,0,0,0.15); border-color: var(--border-color); color: #fff;"></textarea>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-check"></i> Register Department
+                    </button>
+                    <a href="{% url 'department_list' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

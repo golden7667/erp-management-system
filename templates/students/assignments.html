@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | My Assignments{% endblock %}
+{% block active_assignments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>My Assignments</h1>
+        <p class="subtitle text-muted">View pending homework tasks, submit files, and review grade feedback.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fa-solid fa-book-open"></i> Coursework & Submissions</h3>
+                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-color);">{{ assignments|length }} Total</span>
+            </div>
+
+            <div class="table-responsive p-3">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Assignment Title</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Grade / Feedback</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if assignments %}
+                            {% for item in assignments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div style="width: 36px; height: 36px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fa-solid fa-file-signature" style="color: var(--primary-color);"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="text-white">{{ item.assignment.title }}</strong>
+                                            {% if item.assignment.attachment %}
+                                                <a href="{{ item.assignment.attachment.url }}" target="_blank" class="ms-1 text-warning" title="Download Reference File" style="font-size: 0.75rem;">
+                                                    <i class="fa-solid fa-paperclip"></i> Instruction Sheet
+                                                </a>
+                                            {% endif %}
+                                            <div style="font-size: 0.75rem; color: var(--text-muted);">Created by {{ item.assignment.created_by.first_name }} {{ item.assignment.created_by.last_name }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="max-width: 300px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    {{ item.assignment.description }}
+                                </td>
+                                <td style="font-size: 0.85rem;">
+                                    <i class="fa-regular fa-clock text-muted me-1"></i>
+                                    {{ item.assignment.due_date|date:"M d, Y H:i" }}
+                                </td>
+                                <td>
+                                    {% if item.submission %}
+                                        <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald);">Submitted</span>
+                                    {% elif item.is_overdue %}
+                                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">Overdue</span>
+                                    {% else %}
+                                        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--color-amber);">Not Submitted</span>
+                                    {% endif %}
+                                </td>
+                                <td style="font-size: 0.85rem;">
+                                    {% if item.submission %}
+                                        {% if item.submission.grade %}
+                                            <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: var(--color-blue); font-size: 0.8rem; font-weight: 700;">{{ item.submission.grade }}</span>
+                                            <div class="text-muted mt-1" style="font-size: 0.75rem; font-style: italic;">"{{ item.submission.feedback|truncatechars:35 }}"</div>
+                                        {% else %}
+                                            <span class="text-muted">Awaiting Grading</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if item.submission %}
+                                        <a href="{{ item.submission.submitted_file.url }}" class="btn btn-outline btn-sm me-2" target="_blank">
+                                            <i class="fa-solid fa-file-arrow-down"></i> View File
+                                        </a>
+                                        <a href="{% url 'submit_assignment' pk=item.assignment.id %}" class="btn btn-outline btn-sm" style="border-color: var(--color-amber); color: var(--color-amber);">
+                                            <i class="fa-solid fa-pen-to-square"></i> Re-submit
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'submit_assignment' pk=item.assignment.id %}" class="btn btn-outline btn-sm" style="border-color: var(--primary-color); color: #fff; background: var(--primary-gradient);">
+                                            <i class="fa-solid fa-upload"></i> Upload
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="fa-solid fa-folder-open fa-2x mb-2 d-block"></i>
+                                    No assignments posted for your department.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

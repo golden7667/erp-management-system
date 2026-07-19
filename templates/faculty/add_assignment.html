@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Create Assignment{% endblock %}
+{% block active_assignments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Create Assignment</h1>
+        <p class="subtitle text-muted">Post a new assignment or coursework details for a department.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <h4 class="mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-file-invoice"></i> Assignment Details</h4>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted">Assignment Title</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted">Instructions / Description</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Due Date & Time</label>
+                        {{ form.due_date }}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">Department</label>
+                        {{ form.department }}
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-muted">Attachment Reference File (PDF, Word, TXT, etc.)</label>
+                        {{ form.attachment }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-check"></i> Post Assignment
+                    </button>
+                    <a href="{% url 'faculty_assignments' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Guest Portal{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Welcome, Visitor</h1>
+        <p class="subtitle text-muted">You are logged into the guest portal.</p>
+    </div>
+</div>
+
+<div class="table-card p-5 text-center">
+    <div class="mb-4" style="font-size: 3.5rem; color: var(--primary-color);">
+        <i class="fa-solid fa-face-smile"></i>
+    </div>
+    <h2>Unassigned Portal Role</h2>
+    <p class="text-muted mx-auto" style="max-width: 480px;">
+        Your account role has not been fully verified or assigned to a student or faculty profile by the administrator yet. 
+        Please contact the college administration to link your profile to the ERP services.
+    </p>
+</div>
+{% endblock %}

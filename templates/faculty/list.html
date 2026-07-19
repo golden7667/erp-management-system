@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Faculty Directory{% endblock %}
+{% block active_faculty %}active{% endblock %}
+
+{% block content %}
+<div class="view-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Faculty Directory</h1>
+        <p class="subtitle text-muted">Manage faculty profiles, department allocations, and subjects.</p>
+    </div>
+    {% if user.is_admin %}
+    <a href="{% url 'faculty_add' %}" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 20px; border-radius: 10px;">
+        <i class="fa-solid fa-plus"></i> Add Faculty
+    </a>
+    {% endif %}
+</div>
+
+<!-- Search Bar -->
+<div class="table-card mb-4 p-3">
+    <form method="get" action="{% url 'faculty_list' %}" class="row g-2 align-items-center">
+        <div class="col-md-9">
+            <div class="header-search w-100">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Search by name, employee ID or subject...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline w-100" style="padding: 10px 0;"><i class="fa-solid fa-search"></i> Search</button>
+        </div>
+    </form>
+</div>
+
+<!-- Faculty Table -->
+<div class="table-card">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-chalkboard-user"></i> Active Faculty Members</h3>
+    </div>
+    <div class="card-table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Employee ID</th>
+                    <th>Department</th>
+                    <th>Allocated Subject</th>
+                    <th>Email Address</th>
+                    {% if user.is_admin %}
+                    <th>Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fac in faculties %}
+                <tr>
+                    <td><strong>{{ fac.first_name }} {{ fac.last_name }}</strong></td>
+                    <td><code>{{ fac.employee_id }}</code></td>
+                    <td>{{ fac.department.name|default:"Unassigned" }}</td>
+                    <td><span class="badge badge-success">{{ fac.subject }}</span></td>
+                    <td>{{ fac.user.email }}</td>
+                    {% if user.is_admin %}
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'faculty_edit' fac.pk %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
+                            <a href="{% url 'faculty_delete' fac.pk %}" class="btn btn-outline btn-sm text-danger border-danger" onclick="return confirm('Are you sure you want to delete this faculty?')"><i class="fa-solid fa-trash"></i> Delete</a>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-muted text-center">No faculty records found matching the criteria.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

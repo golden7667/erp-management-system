@@ -1,0 +1,663 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Smart College ERP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <script>
+        // Apply saved theme immediately to prevent flashing
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.className = savedTheme + '-theme';
+        })();
+    </script>
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --shadow-custom: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --primary-accent: #0f172a;
+            --primary-glow: rgba(15, 23, 42, 0.05);
+            --radio-inactive: #cbd5e1;
+            --radio-active: #f59e0b;
+        }
+
+        .dark-theme {
+            --bg-gradient: linear-gradient(135deg, #080c14 0%, #0e1626 100%);
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --input-border: rgba(255, 255, 255, 0.12);
+            --shadow-custom: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            --primary-accent: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --radio-inactive: rgba(255, 255, 255, 0.2);
+            --radio-active: #6366f1;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg-gradient);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Set theme wrapper colors on body to match base.html */
+        body.light-theme {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        body.dark-theme {
+            background: linear-gradient(135deg, #080c14 0%, #0e1626 100%);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 520px;
+            padding: 24px;
+        }
+
+        /* Top Role Selection Cards */
+        .role-selection-wrapper {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .role-option-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: var(--shadow-custom);
+        }
+
+        .role-option-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .role-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.05);
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-theme .role-icon-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .role-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Radio Indicator dot */
+        .radio-indicator {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--radio-inactive);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .radio-indicator::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Dynamic Theme Customizations for selected role */
+        .login-container[data-active-theme="student"] {
+            --primary-accent: #0ea5e9;
+            --primary-glow: rgba(14, 165, 233, 0.15);
+            --radio-active: #f59e0b;
+        }
+        
+        .login-container[data-active-theme="faculty"] {
+            --primary-accent: #14b8a6;
+            --primary-glow: rgba(20, 184, 166, 0.15);
+            --radio-active: #14b8a6;
+        }
+
+        .login-container[data-active-theme="admin"] {
+            --primary-accent: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --radio-active: #6366f1;
+        }
+
+        /* Student Active State styling */
+        .role-option-card[data-role="student"].active {
+            border-color: #0ea5e9;
+            box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.15);
+        }
+        .role-option-card[data-role="student"].active .role-icon-wrapper {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+        }
+        .role-option-card[data-role="student"].active .radio-indicator {
+            border-color: #f59e0b;
+        }
+        .role-option-card[data-role="student"].active .radio-indicator::after {
+            background: #f59e0b;
+            transform: scale(1);
+        }
+
+        /* Teacher Active State styling */
+        .role-option-card[data-role="faculty"].active {
+            border-color: #14b8a6;
+            box-shadow: 0 10px 20px -5px rgba(20, 184, 166, 0.15);
+        }
+        .role-option-card[data-role="faculty"].active .role-icon-wrapper {
+            background: rgba(20, 184, 166, 0.1);
+            color: #14b8a6;
+        }
+        .role-option-card[data-role="faculty"].active .radio-indicator {
+            border-color: #14b8a6;
+        }
+        .role-option-card[data-role="faculty"].active .radio-indicator::after {
+            background: #14b8a6;
+            transform: scale(1);
+        }
+
+        /* Admin Active State styling */
+        .role-option-card[data-role="admin"].active {
+            border-color: #6366f1;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.15);
+        }
+        .role-option-card[data-role="admin"].active .role-icon-wrapper {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+        }
+        .role-option-card[data-role="admin"].active .radio-indicator {
+            border-color: #6366f1;
+        }
+        .role-option-card[data-role="admin"].active .radio-indicator::after {
+            background: #6366f1;
+            transform: scale(1);
+        }
+
+        /* Login Card */
+        .login-form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 36px;
+            box-shadow: var(--shadow-custom);
+            transition: all 0.3s ease;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* Branding logo styling */
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .brand-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .brand-name span {
+            color: var(--primary-accent);
+            transition: all 0.3s ease;
+        }
+
+        /* Form Inputs */
+        .form-label-custom {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .input-group-custom {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .form-control-custom {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: var(--card-bg);
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--text-main);
+        }
+
+        /* Remember me & Links */
+        .form-footer-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 24px;
+            font-size: 0.88rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-sub);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+            accent-color: var(--primary-accent);
+        }
+
+        .helper-link {
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .helper-link:hover {
+            color: #0284c7;
+            text-decoration: underline;
+        }
+
+        /* Submit Button */
+        .form-submit-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-login-custom {
+            background: var(--primary-accent);
+            color: #ffffff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-login-custom:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Demo helper pill */
+        .demo-pill {
+            margin-top: 24px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.04);
+            border: 1px dashed rgba(15, 23, 42, 0.1);
+            text-align: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        body.dark-theme .demo-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-pill:hover {
+            background: rgba(15, 23, 42, 0.08);
+            transform: scale(1.01);
+        }
+
+        body.dark-theme .demo-pill:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Floating Theme Toggle Button */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-custom);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.08) rotate(15deg);
+            border-color: var(--primary-accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Apply local storage theme to body class immediately -->
+    <script>
+        document.body.className = localStorage.getItem('theme') || 'dark-theme';
+    </script>
+
+    <!-- Floating Theme Toggle Button -->
+    <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle color theme">
+        <i class="fa-solid fa-moon" id="theme-icon"></i>
+    </button>
+
+    <div class="login-container" id="login-container" data-active-theme="student">
+        
+        <!-- Alerts for Django messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert" style="border-radius:12px; font-size:0.9rem; margin-bottom: 20px;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Top Role Selection Cards -->
+        <div class="role-selection-wrapper" id="role-selector">
+            <!-- Student Option -->
+            <div class="role-option-card{% if active_role == 'student' or not active_role %} active{% endif %}" data-role="student" data-action="{% url 'student_login' %}" data-user="student_amit" data-pass="password123">
+                <div class="radio-indicator"></div>
+                <div class="role-icon-wrapper">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <span class="role-label">Student</span>
+            </div>
+            
+            <!-- Faculty Option -->
+            <div class="role-option-card{% if active_role == 'faculty' %} active{% endif %}" data-role="faculty" data-action="{% url 'faculty_login' %}" data-user="prof_sharma" data-pass="password123">
+                <div class="radio-indicator"></div>
+                <div class="role-icon-wrapper">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <span class="role-label">Teacher</span>
+            </div>
+            
+            <!-- Admin Option -->
+            <div class="role-option-card{% if active_role == 'admin' %} active{% endif %}" data-role="admin" data-action="{% url 'admin_login' %}" data-user="admin" data-pass="password123">
+                <div class="radio-indicator"></div>
+                <div class="role-icon-wrapper">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <span class="role-label">Admin</span>
+            </div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-form-card">
+            <div class="form-header">
+                <h2 class="form-title">Login</h2>
+                <div class="brand-logo">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span class="brand-name">Smart<span>ERP</span></span>
+                </div>
+            </div>
+
+            <form id="login-form" method="post" action="{% url 'student_login' %}">
+                {% csrf_token %}
+                
+                <!-- Username -->
+                <div class="mb-4">
+                    <label class="form-label-custom" for="username-field">User Name</label>
+                    <div class="input-group-custom">
+                        <input type="text" name="username" id="username-field" class="form-control-custom" placeholder="Enter username" required value="{{ form.username.value|default:'' }}">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <label class="form-label-custom" for="password-field">Password</label>
+                    <div class="input-group-custom">
+                        <input type="password" name="password" id="password-field" class="form-control-custom" placeholder="Enter password" required>
+                        <button type="button" id="password-toggle" class="password-toggle-btn">
+                            <i class="fa-solid fa-eye-slash" id="toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer Options -->
+                <div class="form-footer-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="remember_me" id="remember-me" checked> Remember me
+                    </label>
+                    <a href="{% url 'forgot_password' %}" class="helper-link">Forgot Password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-submit-container">
+                    <button type="submit" class="btn-login-custom">Login</button>
+                </div>
+            </form>
+
+            <!-- Quick Auto-Fill Demo -->
+            <div class="demo-pill" id="demo-credentials-pill">
+                <span style="color:var(--text-sub);"><i class="fa-solid fa-wand-magic-sparkles"></i> <strong>Quick Auto-Fill Demo</strong></span><br>
+                <span id="demo-user-text">Username: student_amit</span> | <span id="demo-pass-text">Password: password123</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Parse query params to select active role and preserve next parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const nextParam = urlParams.get('next');
+            const roleParam = urlParams.get('role');
+
+            function updateActiveTheme(card) {
+                const role = card.getAttribute('data-role');
+                const container = document.getElementById('login-container');
+                container.setAttribute('data-active-theme', role);
+                
+                let action = card.getAttribute('data-action');
+                if (nextParam) {
+                    action += (action.includes('?') ? '&' : '?') + `next=${encodeURIComponent(nextParam)}`;
+                }
+                document.getElementById('login-form').action = action;
+                
+                const demoUser = card.getAttribute('data-user');
+                const demoPass = card.getAttribute('data-pass');
+                document.getElementById('demo-user-text').textContent = `Username: ${demoUser}`;
+                document.getElementById('demo-pass-text').textContent = `Password: ${demoPass}`;
+            }
+
+            // Click listener for role cards
+            document.querySelectorAll('.role-option-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.role-option-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    updateActiveTheme(card);
+                });
+            });
+
+            // Initial active configuration setup
+            if (roleParam) {
+                const targetCard = document.querySelector(`.role-option-card[data-role="${roleParam}"]`);
+                if (targetCard) {
+                    document.querySelectorAll('.role-option-card').forEach(c => c.classList.remove('active'));
+                    targetCard.classList.add('active');
+                }
+            }
+            const activeCard = document.querySelector('.role-option-card.active');
+            if (activeCard) {
+                updateActiveTheme(activeCard);
+            }
+
+            // Password visibility toggle
+            const passwordToggle = document.getElementById('password-toggle');
+            const passwordField = document.getElementById('password-field');
+            const toggleIcon = document.getElementById('toggle-icon');
+
+            if (passwordToggle && passwordField && toggleIcon) {
+                passwordToggle.addEventListener('click', () => {
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        toggleIcon.classList.remove('fa-eye-slash');
+                        toggleIcon.classList.add('fa-eye');
+                    } else {
+                        passwordField.type = 'password';
+                        toggleIcon.classList.remove('fa-eye');
+                        toggleIcon.classList.add('fa-eye-slash');
+                    }
+                });
+            }
+
+            // Demo auto fill click event
+            const demoPill = document.getElementById('demo-credentials-pill');
+            if (demoPill) {
+                demoPill.addEventListener('click', () => {
+                    const activeCard = document.querySelector('.role-option-card.active');
+                    if (activeCard) {
+                        const demoUser = activeCard.getAttribute('data-user');
+                        const demoPass = activeCard.getAttribute('data-pass');
+                        document.getElementById('username-field').value = demoUser;
+                        document.getElementById('password-field').value = demoPass;
+                    }
+                });
+            }
+
+            // Theme toggle button logic
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeIcon = document.getElementById('theme-icon');
+
+            function updateThemeUI(theme) {
+                if (theme === 'light') {
+                    document.body.classList.remove('dark-theme');
+                    document.body.classList.add('light-theme');
+                    document.documentElement.className = 'light-theme';
+                    themeIcon.className = 'fa-solid fa-sun';
+                } else {
+                    document.body.classList.remove('light-theme');
+                    document.body.classList.add('dark-theme');
+                    document.documentElement.className = 'dark-theme';
+                    themeIcon.className = 'fa-solid fa-moon';
+                }
+            }
+
+            // Set initial theme UI
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            updateThemeUI(savedTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const activeTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+                localStorage.setItem('theme', activeTheme);
+                updateThemeUI(activeTheme);
+            });
+        });
+    </script>
+</body>
+</html>

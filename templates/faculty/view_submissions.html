@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Submissions{% endblock %}
+{% block active_assignments %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Submissions for "{{ assignment.title }}"</h1>
+        <p class="subtitle text-muted">Review submitted files and input score grades and feedback remarks.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fa-solid fa-list-check"></i> Submissions List</h3>
+                <a href="{% url 'faculty_assignments' %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Back to Assignments</a>
+            </div>
+
+            <div class="table-responsive p-3">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Roll Number</th>
+                            <th>Submitted At</th>
+                            <th>File</th>
+                            <th>Grade</th>
+                            <th>Feedback Remarks</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if submissions %}
+                            {% for s in submissions %}
+                            <tr>
+                                <td>
+                                    <strong class="text-white">{{ s.student.first_name }} {{ s.student.last_name }}</strong>
+                                </td>
+                                <td>
+                                    <code>{{ s.student.roll_number }}</code>
+                                </td>
+                                <td style="font-size: 0.85rem;">
+                                    {{ s.submitted_at|date:"M d, Y H:i" }}
+                                </td>
+                                <td>
+                                    <a href="{{ s.submitted_file.url }}" class="btn btn-outline btn-sm" target="_blank">
+                                        <i class="fa-solid fa-file-arrow-down"></i> Download Work
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if s.grade %}
+                                        <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: var(--color-blue); font-size: 0.85rem; font-weight: 700;">{{ s.grade }}</span>
+                                    {% else %}
+                                        <span class="text-muted" style="font-size: 0.85rem; font-style: italic;">Not Graded</span>
+                                    {% endif %}
+                                </td>
+                                <td style="font-size: 0.85rem; color: var(--text-secondary); max-width: 250px;" class="text-truncate">
+                                    {{ s.feedback|default:"-" }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'grade_submission' submission_id=s.id %}" class="btn btn-outline btn-sm" style="border-color: var(--color-amber); color: var(--color-amber);">
+                                        <i class="fa-solid fa-marker"></i> {% if s.grade %}Regrade{% else %}Grade Submission{% endif %}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="fa-solid fa-inbox fa-2x mb-2 d-block"></i>
+                                    No submissions received yet for this assignment.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

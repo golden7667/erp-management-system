@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Edit Student{% endblock %}
+{% block active_students %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Edit Student Profile</h1>
+        <p class="subtitle text-muted">Update student profile registration details.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <h4 class="mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-user-graduate"></i> Profile Details</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">First Name</label>
+                        {{ student_form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Last Name</label>
+                        {{ student_form.last_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Roll Number</label>
+                        {{ student_form.roll_number }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Department</label>
+                        {{ student_form.department }}
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-muted">Profile Photo</label>
+                        {{ student_form.photo }}
+                    </div>
+                </div>
+
+                <h4 class="mt-4 mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-chart-line"></i> Academic & Financial Details</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Attendance Percentage (%)</label>
+                        {{ student_form.attendance_percentage }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Semester GPA</label>
+                        {{ student_form.semester_result_gpa }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Semester Fee Amount</label>
+                        {{ student_form.semester_fee_amount }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Semester Fee Status</label>
+                        {{ student_form.semester_fee_status }}
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-muted">Continuous Assessment Status</label>
+                        {{ student_form.assessment_status }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                    {% if student.user %}
+                    <a href="{% url 'admin_change_user_password' user_id=student.user.id %}" class="btn btn-outline" style="border-color: #f59e0b; color: #f59e0b; padding: 10px 24px;"><i class="fa-solid fa-key"></i> Change Password</a>
+                    {% endif %}
+                    <a href="{% url 'student_list' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Smart College ERP | Admin Dashboard{% endblock %}
+{% block active_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Administration Dashboard</h1>
+        <p class="subtitle text-muted">Overview of registration metrics, faculty status, and departments.</p>
+    </div>
+</div>
+
+<!-- Metrics Stats Grid -->
+<div class="metrics-grid">
+    <div class="metric-card card-glow-violet">
+        <div class="metric-icon icon-violet"><i class="fa-solid fa-user-graduate"></i></div>
+        <div class="metric-details">
+            <span class="metric-label">Active Students</span>
+            <h3 class="metric-value">{{ total_students|default:"0" }}</h3>
+            <span class="metric-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> All sessions active</span>
+        </div>
+    </div>
+    
+    <div class="metric-card card-glow-emerald">
+        <div class="metric-icon icon-emerald"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <div class="metric-details">
+            <span class="metric-label">Active Faculty</span>
+            <h3 class="metric-value">{{ total_faculty|default:"0" }}</h3>
+            <span class="metric-trend text-success"><i class="fa-solid fa-check"></i> Allocation complete</span>
+        </div>
+    </div>
+    
+    <div class="metric-card card-glow-amber">
+        <div class="metric-icon icon-amber"><i class="fa-solid fa-network-wired"></i></div>
+        <div class="metric-details">
+            <span class="metric-label">Total Departments</span>
+            <h3 class="metric-value">{{ total_departments|default:"0" }}</h3>
+            <span class="metric-trend text-warning"><i class="fa-solid fa-triangle-exclamation"></i> Sync status: OK</span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-row">
+    <div class="chart-card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-chart-line"></i> Average GPA by Department</h3>
+            <span class="chart-year">GPA</span>
+        </div>
+        <div class="chart-body">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-chart-pie"></i> Student Enrollment by Branch</h3>
+        </div>
+        <div class="chart-body doughnut-container">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Split Table panels -->
+<div class="split-row">
+    <div class="table-card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-users"></i> Recent Student Registrations</h3>
+        </div>
+        <div class="card-table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Department</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in recent_students %}
+                    <tr>
+                        <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
+                        <td><code>{{ student.roll_number }}</code></td>
+                        <td>{{ student.department.name|default:"Unassigned" }}</td>
+                        <td>
+                            <a href="{% url 'student_edit' student.pk %}" class="btn btn-outline btn-sm btn-action-icon">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-muted text-center">No student records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="table-card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-user-tie"></i> Recent Faculty Registrations</h3>
+        </div>
+        <div class="card-table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Faculty Name</th>
+                        <th>Employee ID</th>
+                        <th>Department</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fac in recent_faculty %}
+                    <tr>
+                        <td><strong>{{ fac.first_name }} {{ fac.last_name }}</strong></td>
+                        <td><code>{{ fac.employee_id }}</code></td>
+                        <td>{{ fac.department.name|default:"Unassigned" }}</td>
+                        <td>
+                            <a href="{% url 'faculty_edit' fac.pk %}" class="btn btn-outline btn-sm btn-action-icon">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-muted text-center">No faculty records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ chart_category_labels|json_script:"chart-category-labels" }}
+{{ chart_category_values|json_script:"chart-category-values" }}
+{{ chart_sales_labels|json_script:"chart-sales-labels" }}
+{{ chart_sales_values|json_script:"chart-sales-values" }}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const isDark = !document.body.classList.contains('light-theme');
+        const textThemeColor = isDark ? '#94a3b8' : '#64748b';
+        const borderThemeColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+
+        // Line Chart
+        const gpaLabels = JSON.parse(document.getElementById('chart-sales-labels').textContent);
+        const gpaValues = JSON.parse(document.getElementById('chart-sales-values').textContent);
+
+        const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: gpaLabels,
+                datasets: [{
+                    label: 'Average GPA',
+                    data: gpaValues,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#6366f1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        grid: { color: borderThemeColor },
+                        ticks: { color: textThemeColor }
+                    },
+                    y: {
+                        grid: { color: borderThemeColor },
+                        ticks: { color: textThemeColor }
+                    }
+                }
+            }
+        });
+
+        // Doughnut Chart data
+        const catLabels = JSON.parse(document.getElementById('chart-category-labels').textContent);
+        const catValues = JSON.parse(document.getElementById('chart-category-values').textContent);
+
+        const ctxCat = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    data: catValues,
+                    backgroundColor: [
+                        '#6366f1',
+                        '#14b8a6',
+                        '#f59e0b',
+                        '#ec4899',
+                        '#10b981',
+                        '#0ea5e9'
+                    ],
+                    borderWidth: isDark ? 2 : 1,
+                    borderColor: isDark ? '#080c14' : '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: textThemeColor,
+                            font: { family: 'Outfit', size: 11 }
+                        }
+                    }
+                },
+                cutout: '75%'
+            }
+        });
+
+        // Theme switch event listener
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('change', () => {
+                setTimeout(() => {
+                    const isDarkTheme = !document.body.classList.contains('light-theme');
+                    const color = isDarkTheme ? '#94a3b8' : '#64748b';
+                    const gridColor = isDarkTheme ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+
+                    revenueChart.options.scales.x.grid.color = gridColor;
+                    revenueChart.options.scales.y.grid.color = gridColor;
+                    revenueChart.options.scales.x.ticks.color = color;
+                    revenueChart.options.scales.y.ticks.color = color;
+                    revenueChart.update();
+
+                    categoryChart.options.plugins.legend.labels.color = color;
+                    categoryChart.data.datasets[0].borderColor = isDarkTheme ? '#080c14' : '#ffffff';
+                    categoryChart.data.datasets[0].borderWidth = isDarkTheme ? 2 : 1;
+                    categoryChart.update();
+                }, 50);
+            });
+        }
+    });
+</script>
+{% endblock %}

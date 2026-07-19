@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Add Faculty{% endblock %}
+{% block active_faculty %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Add New Faculty</h1>
+        <p class="subtitle text-muted">Register user account credentials and create faculty profile.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <h4 class="mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-key"></i> Account Credentials</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Username</label>
+                        {{ user_form.username }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Email Address</label>
+                        {{ user_form.email }}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted">Password</label>
+                        {{ user_form.password }}
+                    </div>
+                </div>
+
+                <h4 class="mt-4 mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-chalkboard-user"></i> Profile Details</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">First Name</label>
+                        {{ faculty_form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Last Name</label>
+                        {{ faculty_form.last_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Employee ID</label>
+                        {{ faculty_form.employee_id }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Department</label>
+                        {{ faculty_form.department }}
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-muted">Allocated Subject</label>
+                        {{ faculty_form.subject }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-check"></i> Register Faculty
+                    </button>
+                    <a href="{% url 'faculty_list' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

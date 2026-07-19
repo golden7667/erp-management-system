@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Edit Faculty{% endblock %}
+{% block active_faculty %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>Edit Faculty Profile</h1>
+        <p class="subtitle text-muted">Update faculty profile registration details.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <h4 class="mb-3 text-white border-bottom pb-2"><i class="fa-solid fa-chalkboard-user"></i> Profile Details</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">First Name</label>
+                        {{ faculty_form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Last Name</label>
+                        {{ faculty_form.last_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Employee ID</label>
+                        {{ faculty_form.employee_id }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Department</label>
+                        {{ faculty_form.department }}
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-muted">Allocated Subject</label>
+                        {{ faculty_form.subject }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                    {% if faculty.user %}
+                    <a href="{% url 'admin_change_user_password' user_id=faculty.user.id %}" class="btn btn-outline" style="border-color: #f59e0b; color: #f59e0b; padding: 10px 24px;"><i class="fa-solid fa-key"></i> Change Password</a>
+                    {% endif %}
+                    <a href="{% url 'faculty_list' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
