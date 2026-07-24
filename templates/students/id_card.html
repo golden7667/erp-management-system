@@ -4,50 +4,145 @@
 {% block active_students %}active{% endblock %}
 
 {% block content %}
-<div class="view-header mb-4">
+<div class="view-header mb-4 d-flex justify-content-between align-items-center">
     <div>
         <h1>Student ID Card</h1>
-        <p class="subtitle text-muted">A printable and shareable mockup of the student identification card.</p>
+        <p class="subtitle text-muted">Official student identification card with front profile & back barcode.</p>
     </div>
-</div>
-
-<div class="d-flex flex-column align-items-center justify-content-center p-5 table-card">
-    <!-- Premium ID Card Mock -->
-    <div class="id-card-layout text-white p-4 mb-4" style="width: 320px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(99,102,241,0.15); border-radius: 50%;"></div>
-        
-        <div class="brand d-flex align-items-center gap-2 mb-3">
-            <i class="fa-solid fa-graduation-cap" style="color: #6366f1;"></i>
-            <span style="font-size: 0.9rem; font-weight: 800; letter-spacing: 0.5px;">SMART COLLEGE</span>
-        </div>
-        
-        <div class="d-flex gap-3 align-items-center mb-3">
-            {% if student_profile.photo %}
-                <img src="{{ student_profile.photo.url }}" alt="Photo" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.2);">
-            {% else %}
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username }}" alt="Photo" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.2);">
-            {% endif %}
-            <div>
-                <h5 style="margin: 0; font-size: 0.95rem; font-weight: 700;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h5>
-                <span class="text-muted" style="font-size: 0.75rem; color: #94a3b8 !important;">Student / {{ student_profile.department.name|default:"Unassigned" }}</span>
-            </div>
-        </div>
-        
-        <div style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 12px; font-size: 0.8rem;">
-            <div class="d-flex justify-content-between mb-1">
-                <span style="color: #94a3b8;">Roll Number:</span>
-                <strong style="color: #f8fafc;">{{ student_profile.roll_number }}</strong>
-            </div>
-            <div class="d-flex justify-content-between">
-                <span style="color: #94a3b8;">Issue Date:</span>
-                <strong style="color: #f8fafc;">July 2026</strong>
-            </div>
-        </div>
-    </div>
-    
-    <div class="d-flex gap-3">
-        <button class="btn btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print ID Card</button>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline" onclick="window.print()" style="background: var(--primary-gradient); border: none; color: #fff; font-weight: 600;">
+            <i class="fa-solid fa-print"></i> Print ID Card
+        </button>
         <a href="{% url 'student_list' %}" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Back to List</a>
     </div>
 </div>
+
+<div class="d-flex flex-wrap align-items-center justify-content-center gap-4 p-4 table-card">
+    
+    <!-- FRONT SIDE CARD -->
+    <div class="id-card-layout text-white p-4" style="width: 340px; min-height: 460px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 18px; border: 1.5px solid rgba(255,255,255,0.15); box-shadow: 0 12px 30px rgba(0,0,0,0.4); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="position: absolute; top: -25px; right: -25px; width: 100px; height: 100px; background: rgba(99,102,241,0.18); border-radius: 50%;"></div>
+        
+        <!-- Card Header -->
+        <div class="d-flex align-items-center justify-content-between border-bottom pb-2" style="border-color: rgba(255,255,255,0.15) !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-graduation-cap" style="color: #818cf8; font-size: 1.3rem;"></i>
+                <span style="font-size: 0.95rem; font-weight: 800; letter-spacing: 0.8px;">SMART COLLEGE</span>
+            </div>
+            <span class="badge" style="background: rgba(99, 102, 241, 0.25); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); font-size: 0.7rem;">STUDENT</span>
+        </div>
+        
+        <!-- Profile Main Details -->
+        <div class="d-flex flex-column align-items-center text-center my-2">
+            <!-- Text directly above photo -->
+            <div style="font-size: 0.85rem; font-weight: 800; letter-spacing: 1.2px; color: #a5b4fc; margin-bottom: 8px; text-transform: uppercase;">
+                <i class="fa-solid fa-id-card me-1"></i> STUDENT ID CARD
+            </div>
+
+            <div class="mb-2">
+                {% if student_profile.photo %}
+                    <img src="{{ student_profile.photo.url }}" alt="Photo" style="width: 95px; height: 95px; object-fit: cover; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.3); box-shadow: 0 6px 15px rgba(0,0,0,0.4);">
+                {% else %}
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username }}" alt="Photo" style="width: 95px; height: 95px; object-fit: cover; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.05);">
+                {% endif %}
+            </div>
+            <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h4>
+            <span style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600; margin-top: 2px;">{{ student_profile.department.name|default:"Unassigned Department" }}</span>
+        </div>
+        
+        <!-- Key Details Section -->
+        <div style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px 14px; font-size: 0.82rem;">
+            <div class="d-flex justify-content-between mb-2">
+                <span style="color: #94a3b8;"><i class="fa-solid fa-id-badge text-indigo me-1"></i> Roll Number:</span>
+                <strong style="color: #f8fafc; font-family: monospace; font-size: 0.9rem;">{{ student_profile.roll_number }}</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span style="color: #94a3b8;"><i class="fa-solid fa-code-branch text-info me-1"></i> Branch Name:</span>
+                <strong style="color: #f8fafc;">{{ student_profile.department.code|default:"CSE" }}</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span style="color: #94a3b8;"><i class="fa-solid fa-calendar-check text-success me-1"></i> Valid Date:</span>
+                <strong style="color: #34d399;">July 2026 - July 2028</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- BACK SIDE CARD -->
+    <div class="id-card-layout text-white p-4" style="width: 340px; min-height: 460px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 18px; border: 1.5px solid rgba(255,255,255,0.15); box-shadow: 0 12px 30px rgba(0,0,0,0.4); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="position: absolute; bottom: -25px; right: -25px; width: 100px; height: 100px; background: rgba(14,165,233,0.15); border-radius: 50%;"></div>
+        
+        <div class="d-flex align-items-center justify-content-between border-bottom pb-2" style="border-color: rgba(255,255,255,0.15) !important;">
+            <span style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #94a3b8;">STUDENT IDENTIFICATION</span>
+            <span class="badge" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; font-size: 0.65rem;">BACK SIDE</span>
+        </div>
+        
+        <!-- Generated Barcode Section -->
+        <div class="my-2">
+            <span style="font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px;"><i class="fa-solid fa-barcode me-1"></i> Official Student Barcode</span>
+            <div class="barcode-container text-center p-2 rounded" style="background: #ffffff; border-radius: 8px;">
+                <svg id="student-barcode" data-barcode-val="{{ student_profile.roll_number }}" style="width: 100%; max-height: 48px;"></svg>
+            </div>
+        </div>
+        
+        <!-- Contact & Residential Address Section -->
+        <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; font-size: 0.8rem;" class="mb-2">
+            <div class="mb-2">
+                <span style="color: #94a3b8; display: block; font-size: 0.73rem;"><i class="fa-solid fa-location-dot text-danger me-1"></i> Residential Address:</span>
+                <strong style="color: #f1f5f9; font-weight: 500; line-height: 1.3; display: block; margin-top: 2px;">
+                    {{ student_profile.address|default:"College Hostel / Main Campus, Smart City" }}
+                </strong>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+                <span style="color: #94a3b8;"><i class="fa-solid fa-phone text-emerald me-1"></i> Phone:</span>
+                <strong style="color: #f8fafc;">{{ student_profile.phone_number|default:"N/A" }}</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span style="color: #94a3b8;"><i class="fa-solid fa-envelope text-info me-1"></i> Email:</span>
+                <strong style="color: #f8fafc; font-size: 0.75rem;">{{ student_profile.user.email }}</strong>
+            </div>
+        </div>
+
+        <!-- Signature & Seal -->
+        <div class="d-flex justify-content-between align-items-end pt-2 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div>
+                <span style="font-size: 0.65rem; color: #64748b; display: block;">If found, please return to:</span>
+                <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">Smart College Office</span>
+            </div>
+            <div class="text-center">
+                <div style="font-family: 'Dancing Script', cursive, cursive; font-weight: 700; font-size: 0.9rem; color: #818cf8; letter-spacing: 1px;">Principal</div>
+                <span style="font-size: 0.65rem; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.2); display: block; padding-top: 2px;">Auth. Signatory</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- JsBarcode CDN -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const barcodeElem = document.getElementById('student-barcode');
+        if (barcodeElem) {
+            const val = barcodeElem.getAttribute('data-barcode-val') || 'STU-1000';
+            try {
+                JsBarcode("#student-barcode", val, {
+                    format: "CODE128",
+                    width: 1.8,
+                    height: 38,
+                    displayValue: true,
+                    fontSize: 10,
+                    fontOptions: "bold",
+                    font: "monospace",
+                    background: "#ffffff",
+                    lineColor: "#0f172a",
+                    margin: 4
+                });
+            } catch (e) {
+                console.log("JsBarcode rendering error:", e);
+            }
+        }
+    });
+</script>
 {% endblock %}

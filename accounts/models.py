@@ -11,6 +11,9 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='STUDENT')
     email_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, default='')
+    address = models.TextField(blank=True, default='')
+
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
@@ -26,3 +29,22 @@ class User(AbstractUser):
     @property
     def is_student(self):
         return self.role == 'STUDENT'
+
+    @property
+    def avatar_url(self):
+        if self.is_student:
+            try:
+                if self.student_profile.photo:
+                    return self.student_profile.photo.url
+            except Exception:
+                pass
+        elif self.is_faculty:
+            try:
+                if self.faculty_profile.photo:
+                    return self.faculty_profile.photo.url
+            except Exception:
+                pass
+        if self.profile_picture:
+            return self.profile_picture.url
+        return f"https://api.dicebear.com/7.x/adventurer/svg?seed={self.username}"
+

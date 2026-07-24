@@ -213,3 +213,12 @@ def student_results(request):
         'standing': standing,
         'gpa_class': gpa_class
     })
+
+@login_required
+def student_classroom_alerts(request):
+    return redirect('classroom_alert_list')
+
+@login_required
+def student_timetable(request):
+    return redirect('timetable_view')
+

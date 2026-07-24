@@ -5,15 +5,17 @@ from accounts.models import User
 class FacultyForm(forms.ModelForm):
     class Meta:
         model = Faculty
-        fields = ('first_name', 'last_name', 'employee_id', 'department', 'subject', 'phone_number', 'office_location')
+        fields = ('first_name', 'last_name', 'employee_id', 'department', 'photo', 'subject', 'phone_number', 'office_location', 'address')
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
             'employee_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Employee ID'}),
             'department': forms.Select(attrs={'class': 'form-select'}),
+            'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Allocated Subject'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
             'office_location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Office Location'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Address'}),
         }
 
 class FacultyProfileEditForm(forms.ModelForm):
@@ -21,12 +23,14 @@ class FacultyProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = Faculty
-        fields = ('first_name', 'last_name', 'phone_number', 'office_location')
+        fields = ('first_name', 'last_name', 'photo', 'phone_number', 'office_location', 'address')
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
             'office_location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Office Location'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Address'}),
         }
 
     def __init__(self, *args, **kwargs):

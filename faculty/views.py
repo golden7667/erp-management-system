@@ -36,7 +36,7 @@ def faculty_add(request):
         
     if request.method == 'POST':
         user_form = FacultyUserForm(request.POST)
-        faculty_form = FacultyForm(request.POST)
+        faculty_form = FacultyForm(request.POST, request.FILES)
         
         if user_form.is_valid() and faculty_form.is_valid():
             # Create user
@@ -70,7 +70,7 @@ def faculty_edit(request, pk):
     faculty = get_object_or_404(Faculty, pk=pk)
     
     if request.method == 'POST':
-        faculty_form = FacultyForm(request.POST, instance=faculty)
+        faculty_form = FacultyForm(request.POST, request.FILES, instance=faculty)
         if faculty_form.is_valid():
             faculty_form.save()
             messages.success(request, f"Faculty {faculty} updated successfully!")
@@ -82,6 +82,11 @@ def faculty_edit(request, pk):
         'faculty_form': faculty_form,
         'faculty': faculty
     })
+
+@login_required
+def faculty_id_card(request, pk):
+    faculty = get_object_or_404(Faculty, pk=pk)
+    return render(request, 'faculty/id_card.html', {'faculty_profile': faculty})
 
 @login_required
 def faculty_delete(request, pk):
@@ -181,7 +186,7 @@ def faculty_profile_edit(request):
         return redirect('dashboard_home')
         
     if request.method == 'POST':
-        form = FacultyProfileEditForm(request.POST, instance=faculty)
+        form = FacultyProfileEditForm(request.POST, request.FILES, instance=faculty)
         if form.is_valid():
             form.save()
             messages.success(request, "Your profile has been updated successfully!")
@@ -193,6 +198,7 @@ def faculty_profile_edit(request):
         'form': form,
         'faculty': faculty
     })
+
 
 @login_required
 def faculty_attendance_manage(request):
@@ -206,28 +212,78 @@ def faculty_attendance_manage(request):
         messages.error(request, "Faculty profile does not exist.")
         return redirect('dashboard_home')
         
-    students = Student.objects.filter(department=faculty.department).order_by('first_name', 'last_name')
+    students = Student.objects.filter(department=faculty.department).order_by('roll_number')
     
     if request.method == 'POST':
-        for student in students:
-            attendance_key = f'attendance_{student.id}'
-            if attendance_key in request.POST:
-                try:
-                    val = float(request.POST[attendance_key])
-                    if 0.0 <= val <= 100.0:
-                        student.attendance_percentage = val
-                        student.save()
+        action = request.POST.get('action', '')
+
+        # Quick Single Roll Number Mark
+        if action == 'quick_mark':
+            quick_roll = request.POST.get('quick_roll_number', '').strip()
+            quick_status = request.POST.get('quick_status', 'PRESENT')
+            quick_pct = request.POST.get('quick_percentage', '')
+
+            target_student = students.filter(roll_number__iexact=quick_roll).first()
+            if target_student:
+                if quick_pct:
+                    try:
+                        val = float(quick_pct)
+                        if 0.0 <= val <= 100.0:
+                            target_student.attendance_percentage = round(val, 1)
+                            target_student.save()
+                            messages.success(request, f"Updated Roll No {target_student.roll_number} ({target_student.first_name}) attendance to {val}%.")
+                        else:
+                            messages.error(request, "Percentage must be between 0 and 100.")
+                    except ValueError:
+                        messages.error(request, "Invalid percentage value.")
+                else:
+                    if quick_status == 'PRESENT':
+                        target_student.attendance_percentage = min(100.0, round(target_student.attendance_percentage + 2.0, 1))
+                        target_student.save()
+                        messages.success(request, f"Marked PRESENT for Roll No {target_student.roll_number} ({target_student.first_name} {target_student.last_name}). Attendance: {target_student.attendance_percentage}%.")
                     else:
-                        messages.warning(request, f"Skipped invalid attendance value for {student.first_name}: {val}% (must be 0-100)")
+                        target_student.attendance_percentage = max(0.0, round(target_student.attendance_percentage - 2.0, 1))
+                        target_student.save()
+                        messages.warning(request, f"Marked ABSENT for Roll No {target_student.roll_number} ({target_student.first_name} {target_student.last_name}). Attendance: {target_student.attendance_percentage}%.")
+            else:
+                messages.error(request, f"No student found with Roll Number '{quick_roll}' in your department.")
+
+            return redirect('faculty_attendance_manage')
+
+        # Batch Attendance Marking by Roll Number
+        for student in students:
+            status_key = f'status_{student.id}'
+            pct_key = f'attendance_{student.id}'
+
+            # Check if Present/Absent radio was toggled
+            if status_key in request.POST:
+                mode = request.POST[status_key]
+                if mode == 'PRESENT':
+                    student.attendance_percentage = min(100.0, round(student.attendance_percentage + 1.5, 1))
+                elif mode == 'ABSENT':
+                    student.attendance_percentage = max(0.0, round(student.attendance_percentage - 2.5, 1))
+
+            # Direct percentage override
+            elif pct_key in request.POST:
+                try:
+                    val = float(request.POST[pct_key])
+                    if 0.0 <= val <= 100.0:
+                        student.attendance_percentage = round(val, 1)
+                    else:
+                        messages.warning(request, f"Skipped invalid value for Roll No {student.roll_number}: {val}%")
                 except ValueError:
-                    messages.warning(request, f"Skipped non-numeric attendance value for {student.first_name}")
-        messages.success(request, "Attendance updated successfully!")
+                    pass
+
+            student.save()
+
+        messages.success(request, "Attendance records updated successfully by Roll Number!")
         return redirect('faculty_attendance_manage')
         
     return render(request, 'faculty/attendance_manage.html', {
         'students': students,
         'faculty': faculty
     })
+
 
 @login_required
 def faculty_results_manage(request):
@@ -270,3 +326,12 @@ def faculty_results_manage(request):
         'students': students,
         'faculty': faculty
     })
+
+@login_required
+def faculty_classroom_alerts(request):
+    return redirect('classroom_alert_list')
+
+@login_required
+def faculty_timetable(request):
+    return redirect('timetable_view')
+

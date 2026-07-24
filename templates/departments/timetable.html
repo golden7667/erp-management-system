@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Class Timetable{% endblock %}
+{% block active_timetable %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h1><i class="fa-solid fa-calendar-days text-info me-2"></i>Class Timetable & Weekly Schedule</h1>
+        <p class="subtitle text-muted">View lecture timings, assigned rooms, subjects, and faculty details for the week.</p>
+    </div>
+    {% if user.is_faculty or user.is_admin %}
+    <a href="{% url 'timetable_add' %}" class="btn btn-primary" style="background: var(--primary-gradient); border: none;">
+        <i class="fa-solid fa-plus-circle me-1"></i> Add Timetable Slot
+    </a>
+    {% endif %}
+</div>
+
+<!-- Department Filter Bar -->
+<div class="table-card mb-4 p-3">
+    <form method="GET" action="{% url 'timetable_view' %}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <label class="form-label text-muted mb-0 me-2" style="font-size: 0.88rem;"><i class="fa-solid fa-building-columns me-1"></i> Select Department Schedule:</label>
+        </div>
+        <div class="col-md-4">
+            <select name="dept" class="form-select bg-dark text-white border-secondary" onchange="this.form.submit()">
+                {% for dept in departments %}
+                <option value="{{ dept.id }}" {% if selected_dept.id == dept.id %}selected{% endif %}>{{ dept.name }} ({{ dept.code }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-light w-100"><i class="fa-solid fa-check me-1"></i> View</button>
+        </div>
+    </form>
+</div>
+
+<!-- Weekly Schedule Grid -->
+<div class="row">
+    {% for day_item in days_data %}
+    <div class="col-lg-6 mb-4">
+        <div class="table-card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: rgba(99, 102, 241, 0.08);">
+                <h3 class="m-0 text-white" style="font-size: 1.05rem; font-weight: 700;">
+                    <i class="fa-regular fa-calendar me-2 text-primary"></i>{{ day_item.title }}
+                </h3>
+                <span class="badge bg-dark text-info border border-secondary" style="font-size: 0.75rem;">
+                    {{ day_item.slots|length }} Lectures
+                </span>
+            </div>
+
+            <div class="p-3">
+                {% if day_item.slots %}
+                    <div class="d-flex flex-column gap-3">
+                    {% for slot in day_item.slots %}
+                        <div class="p-3 rounded border d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.08) !important;">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; font-size: 0.78rem;">
+                                        <i class="fa-regular fa-clock me-1"></i>{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
+                                    </span>
+                                    <span class="badge bg-secondary text-white" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1"></i>{{ slot.room_number }}</span>
+                                    {% if slot.semester_or_year %}
+                                    <span class="badge bg-dark border text-muted" style="font-size: 0.7rem;">{{ slot.semester_or_year }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <h5 style="margin: 0; font-size: 1.0rem; font-weight: 700; color: #f8fafc;">{{ slot.subject }}</h5>
+                                <span class="text-muted" style="font-size: 0.82rem;">
+                                    <i class="fa-solid fa-chalkboard-user me-1"></i>
+                                    {% if slot.faculty %}Prof. {{ slot.faculty.first_name }} {{ slot.faculty.last_name }}{% else %}Unassigned Faculty{% endif %}
+                                </span>
+                            </div>
+
+                            {% if user.is_faculty or user.is_admin %}
+                            <div class="d-flex gap-1">
+                                <a href="{% url 'timetable_edit' slot.pk %}" class="btn btn-sm btn-outline-info" title="Edit Slot" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a href="{% url 'timetable_delete' slot.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this timetable slot?');" title="Delete Slot" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-bed mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+                        <p class="m-0" style="font-size: 0.85rem;">No classes scheduled for {{ day_item.title }}.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

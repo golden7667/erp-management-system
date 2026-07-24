@@ -1,85 +1,195 @@
 {% extends 'base.html' %}
 
-{% block title %}Smart College ERP | Manage Attendance{% endblock %}
+{% block title %}Smart College ERP | Attendance Marking by Roll Number{% endblock %}
 {% block active_attendance %}active{% endblock %}
 
 {% block content %}
-<div class="view-header mb-4">
+<div class="view-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div>
-        <h1>Manage Attendance Records</h1>
-        <p class="subtitle text-muted">Update the attendance percentages for all students in the {{ faculty.department.name }} department.</p>
+        <h1><i class="fa-solid fa-clipboard-user text-primary me-2"></i>Attendance Marking by Roll Number</h1>
+        <p class="subtitle text-muted">Manage cohort attendance by Roll Number for {{ faculty.department.name }} ({{ faculty.department.code }}).</p>
     </div>
+    <span class="badge bg-dark border text-info" style="font-size: 0.9rem; padding: 10px 16px;">
+        <i class="fa-solid fa-users me-1"></i> {{ students|length }} Students Enrolled
+    </span>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="table-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3><i class="fa-solid fa-calendar-days"></i> Student Attendance Cohort</h3>
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-emerald);">{{ students|length }} Enrolled</span>
-            </div>
+<!-- Quick Roll Number Entry Card -->
+<div class="table-card mb-4 p-4" style="background: rgba(30, 27, 75, 0.4); border: 1.5px solid rgba(99, 102, 241, 0.25);">
+    <h4 class="text-white mb-3" style="font-size: 1.05rem; font-weight: 700;">
+        <i class="fa-solid fa-bolt text-warning me-2"></i>Quick Single Roll Number Mark
+    </h4>
+    <form method="POST" action="{% url 'faculty_attendance_manage' %}" class="row g-3 align-items-end">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="quick_mark">
 
-            <form method="post" class="p-3">
-                {% csrf_token %}
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Roll Number</th>
-                                <th style="width: 200px;">Current Attendance</th>
-                                <th style="width: 250px;">Update Percentage (%)</th>
-                                <th>Status Alert</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if students %}
-                                {% for student in students %}
-                                <tr>
-                                    <td>
-                                        <strong class="text-white">{{ student.first_name }} {{ student.last_name }}</strong>
-                                    </td>
-                                    <td>
-                                        <code>{{ student.roll_number }}</code>
-                                    </td>
-                                    <td>
-                                        <strong class="text-white">{{ student.attendance_percentage }}%</strong>
-                                    </td>
-                                    <td>
-                                        <div class="input-group">
-                                            <input type="number" name="attendance_{{ student.id }}" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" step="0.1" min="0" max="100" value="{{ student.attendance_percentage }}" required>
-                                            <span class="input-group-text" style="background: var(--bg-secondary); color: var(--text-muted); border-color: var(--border-color);">%</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if student.attendance_percentage >= 75.0 %}
-                                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald);"><i class="fa-solid fa-circle-check"></i> Safe</span>
-                                        {% else %}
-                                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> De-barred warning</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">
-                                        <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>
-                                        No students registered in your department.
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
+        <div class="col-md-4">
+            <label class="form-label text-light fw-semibold" style="font-size: 0.85rem;">Select or Type Roll Number:</label>
+            <input type="text" name="quick_roll_number" id="quick_roll_number" list="rollno_list" class="form-control bg-dark text-white border-secondary" placeholder="e.g. CS-2026-992" required autocomplete="off">
+            <datalist id="rollno_list">
+                {% for student in students %}
+                <option value="{{ student.roll_number }}">{{ student.first_name }} {{ student.last_name }}</option>
+                {% endfor %}
+            </datalist>
+        </div>
 
-                <div class="d-flex gap-3 mt-4">
-                    <button type="submit" class="btn btn-outline" style="border: none; background: var(--primary-gradient); color: #fff; font-weight: 600; padding: 10px 24px; border-radius: 8px;">
-                        <i class="fa-solid fa-floppy-disk"></i> Save Attendance Records
-                    </button>
-                    <a href="{% url 'dashboard_home' %}" class="btn btn-outline" style="padding: 10px 24px;"><i class="fa-solid fa-xmark"></i> Cancel</a>
-                </div>
-            </form>
+        <div class="col-md-3">
+            <label class="form-label text-light fw-semibold" style="font-size: 0.85rem;">Action Status:</label>
+            <select name="quick_status" class="form-select bg-dark text-white border-secondary">
+                <option value="PRESENT">Mark Present (+1 Class)</option>
+                <option value="ABSENT">Mark Absent</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label text-light fw-semibold" style="font-size: 0.85rem;">Or Direct % Override (Optional):</label>
+            <input type="number" name="quick_percentage" class="form-control bg-dark text-white border-secondary" step="0.1" min="0" max="100" placeholder="e.g. 95.0">
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100" style="background: var(--primary-gradient); border: none; font-weight: 600;">
+                <i class="fa-solid fa-check me-1"></i> Apply
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Main Attendance Table Card -->
+<div class="table-card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h3 class="m-0"><i class="fa-solid fa-list-check me-2"></i> Student Roll Number Cohort</h3>
+        
+        <!-- Quick Batch Action Buttons -->
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="markAll('PRESENT')">
+                <i class="fa-solid fa-check-double me-1"></i> Mark All Present
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="markAll('ABSENT')">
+                <i class="fa-solid fa-xmark me-1"></i> Mark All Absent
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAll()">
+                <i class="fa-solid fa-rotate-left me-1"></i> Reset
+            </button>
         </div>
     </div>
+
+    <!-- Live Search Input -->
+    <div class="p-3 border-bottom border-secondary" style="border-color: rgba(255,255,255,0.08) !important;">
+        <div class="input-group">
+            <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="rollNoSearch" class="form-control bg-dark text-white border-secondary" placeholder="Filter table instantly by Roll Number or Name..." onkeyup="filterRows()">
+        </div>
+    </div>
+
+    <form method="post" class="p-3">
+        {% csrf_token %}
+        <div class="table-responsive">
+            <table class="table align-middle" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th style="width: 180px;">Roll Number</th>
+                        <th>Student Name</th>
+                        <th style="width: 140px;">Current %</th>
+                        <th style="width: 220px;">Daily Attendance Marking</th>
+                        <th style="width: 160px;">Override %</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students %}
+                        {% for student in students %}
+                        <tr class="attendance-row">
+                            <td>
+                                <code class="fs-6 text-warning font-monospace fw-bold" style="background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                    <i class="fa-solid fa-id-badge me-1"></i>{{ student.roll_number }}
+                                </code>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if student.photo %}
+                                        <img src="{{ student.photo.url }}" alt="Photo" class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student.user.username }}" alt="Photo" class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover;">
+                                    {% endif %}
+                                    <strong class="text-white student-name">{{ student.first_name }} {{ student.last_name }}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="fs-6 {% if student.attendance_percentage >= 75.0 %}text-emerald{% else %}text-danger{% endif %}">
+                                    {{ student.attendance_percentage }}%
+                                </strong>
+                            </td>
+                            <td>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check radio-present" name="status_{{ student.id }}" id="present_{{ student.id }}" value="PRESENT" autocomplete="off">
+                                    <label class="btn btn-outline-success btn-sm" for="present_{{ student.id }}"><i class="fa-solid fa-check"></i> Present</label>
+
+                                    <input type="radio" class="btn-check radio-absent" name="status_{{ student.id }}" id="absent_{{ student.id }}" value="ABSENT" autocomplete="off">
+                                    <label class="btn btn-outline-danger btn-sm" for="absent_{{ student.id }}"><i class="fa-solid fa-xmark"></i> Absent</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="attendance_{{ student.id }}" class="form-control bg-dark text-white border-secondary" step="0.1" min="0" max="100" value="{{ student.attendance_percentage }}">
+                                    <span class="input-group-text bg-dark border-secondary text-muted">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if student.attendance_percentage >= 75.0 %}
+                                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;"><i class="fa-solid fa-circle-check me-1"></i> Safe</span>
+                                {% else %}
+                                    <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Shortage</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>
+                                No students registered in your department.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn btn-primary" style="background: var(--primary-gradient); border: none; font-weight: 600; padding: 10px 24px;">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Save All Attendance Records
+            </button>
+            <a href="{% url 'dashboard_home' %}" class="btn btn-outline-secondary" style="padding: 10px 24px;"><i class="fa-solid fa-xmark me-1"></i> Cancel</a>
+        </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterRows() {
+        const query = document.getElementById('rollNoSearch').value.toLowerCase();
+        const rows = document.querySelectorAll('.attendance-row');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(query)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function markAll(status) {
+        if (status === 'PRESENT') {
+            document.querySelectorAll('.radio-present').forEach(radio => radio.checked = true);
+        } else if (status === 'ABSENT') {
+            document.querySelectorAll('.radio-absent').forEach(radio => radio.checked = true);
+        }
+    }
+
+    function clearAll() {
+        document.querySelectorAll('.radio-present, .radio-absent').forEach(radio => radio.checked = false);
+    }
+</script>
 {% endblock %}

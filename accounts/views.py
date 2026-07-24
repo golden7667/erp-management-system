@@ -8,13 +8,15 @@ from django.conf import settings
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
-from django.db.models import Count, Avg
+import datetime
+from django.db.models import Count, Avg, Q
 
 from .models import User
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, AdminProfileEditForm
 from students.models import Student
 from faculty.models import Faculty
-from departments.models import Department
+from departments.models import Department, ClassroomAlert, TimetableSlot
+
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -175,10 +177,25 @@ def faculty_dashboard(request):
     except Faculty.DoesNotExist:
         faculty_profile = None
         
+    current_day = datetime.datetime.now().strftime('%A').upper()
+    if current_day not in ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']:
+        current_day = 'MONDAY'
+
+    alerts = ClassroomAlert.objects.filter(is_active=True)
+    today_schedule = TimetableSlot.objects.filter(is_active=True, day_of_week=current_day)
+
+    if faculty_profile:
+        if faculty_profile.department:
+            alerts = alerts.filter(Q(department=faculty_profile.department) | Q(department__isnull=True))
+        today_schedule = today_schedule.filter(Q(faculty=faculty_profile) | Q(department=faculty_profile.department)).order_by('start_time')
+
     context = {
         'faculty_profile': faculty_profile,
         'total_students': Student.objects.filter(department=faculty_profile.department).count() if faculty_profile else 0,
         'my_students': Student.objects.filter(department=faculty_profile.department) if faculty_profile else [],
+        'classroom_alerts': alerts[:5],
+        'today_timetable': today_schedule,
+        'current_day_name': current_day.capitalize(),
         'user': request.user,
     }
     return render(request, 'dashboard/faculty.html', context)
@@ -193,11 +210,27 @@ def student_dashboard(request):
     except Student.DoesNotExist:
         student_profile = None
         
+    current_day = datetime.datetime.now().strftime('%A').upper()
+    if current_day not in ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']:
+        current_day = 'MONDAY'
+
+    alerts = ClassroomAlert.objects.filter(is_active=True)
+    today_schedule = []
+
+    if student_profile:
+        if student_profile.department:
+            alerts = alerts.filter(Q(department=student_profile.department) | Q(department__isnull=True))
+            today_schedule = TimetableSlot.objects.filter(is_active=True, day_of_week=current_day, department=student_profile.department).order_by('start_time')
+    
     context = {
         'student_profile': student_profile,
+        'classroom_alerts': alerts[:5],
+        'today_timetable': today_schedule,
+        'current_day_name': current_day.capitalize(),
         'user': request.user,
     }
     return render(request, 'dashboard/student.html', context)
+
 
 def password_reset_confirm_view(request, uidb64, token):
     try:
@@ -295,4 +328,30 @@ def admin_change_user_password(request, user_id):
         else:
             messages.error(request, "Passwords do not match.")
     return render(request, 'registration/admin_change_password.html', {'user': target_user})
+
+@login_required
+def admin_profile_edit(request):
+    if not request.user.is_admin:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    if request.method == 'POST':
+        form = AdminProfileEditForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Admin profile updated successfully!")
+            return redirect('admin_dashboard')
+    else:
+        form = AdminProfileEditForm(instance=request.user)
+        
+    return render(request, 'registration/admin_profile_edit.html', {'form': form})
+
+@login_required
+def admin_id_card(request):
+    if not request.user.is_admin:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+    return render(request, 'registration/admin_id_card.html', {'admin_user': request.user})
+
+
 

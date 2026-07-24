@@ -21,5 +21,9 @@ urlpatterns = [
 
     # Admin password change for any user
     path('admin/change-password/<int:user_id>/', views.admin_change_user_password, name='admin_change_user_password'),
+    path('admin/profile/edit/', views.admin_profile_edit, name='admin_profile_edit'),
+    path('admin/id-card/', views.admin_id_card, name='admin_id_card'),
+
+
 
 ]

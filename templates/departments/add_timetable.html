@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | {% if is_edit %}Edit{% else %}Add{% endif %} Timetable Slot{% endblock %}
+{% block active_timetable %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>{% if is_edit %}<i class="fa-solid fa-pen-to-square text-info me-2"></i>Edit Timetable Slot{% else %}<i class="fa-solid fa-plus-circle text-primary me-2"></i>Add Timetable Slot{% endif %}</h1>
+        <p class="subtitle text-muted">Configure lecture timing, room allocation, day of week, and assigned faculty.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="table-card p-4">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Department <span class="text-danger">*</span></label>
+                        {{ form.department }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Subject / Course <span class="text-danger">*</span></label>
+                        {{ form.subject }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Assigned Faculty</label>
+                        {{ form.faculty }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Day of Week <span class="text-danger">*</span></label>
+                        {{ form.day_of_week }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Start Time <span class="text-danger">*</span></label>
+                        {{ form.start_time }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">End Time <span class="text-danger">*</span></label>
+                        {{ form.end_time }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Room Number / Location <span class="text-danger">*</span></label>
+                        {{ form.room_number }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Semester / Academic Year</label>
+                        {{ form.semester_or_year }}
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    {{ form.is_active }}
+                    <label class="form-check-label text-light ms-2">Mark Slot as Active</label>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'timetable_view' %}" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="background: var(--primary-gradient); border: none;">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> {% if is_edit %}Save Changes{% else %}Add Timetable Slot{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

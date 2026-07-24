@@ -6,6 +6,7 @@ urlpatterns = [
     path('add/', views.faculty_add, name='faculty_add'),
     path('edit/<int:pk>/', views.faculty_edit, name='faculty_edit'),
     path('delete/<int:pk>/', views.faculty_delete, name='faculty_delete'),
+    path('id-card/<int:pk>/', views.faculty_id_card, name='faculty_id_card'),
     path('assignments/', views.faculty_assignments, name='faculty_assignments'),
     path('assignments/add/', views.add_assignment, name='add_assignment'),
     path('assignments/<int:pk>/submissions/', views.view_submissions, name='view_submissions'),
@@ -13,4 +14,6 @@ urlpatterns = [
     path('profile/edit/', views.faculty_profile_edit, name='faculty_profile_edit'),
     path('attendance/', views.faculty_attendance_manage, name='faculty_attendance_manage'),
     path('results/', views.faculty_results_manage, name='faculty_results_manage'),
+    path('alerts/', views.faculty_classroom_alerts, name='faculty_classroom_alerts'),
+    path('timetable/', views.faculty_timetable, name='faculty_timetable'),
 ]

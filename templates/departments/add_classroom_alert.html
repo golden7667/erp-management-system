@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | {% if is_edit %}Edit{% else %}Post{% endif %} Classroom Alert{% endblock %}
+{% block active_alerts %}active{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4">
+    <div>
+        <h1>{% if is_edit %}<i class="fa-solid fa-pen-to-square text-info me-2"></i>Edit Classroom Alert{% else %}<i class="fa-solid fa-bullhorn text-danger me-2"></i>Post New Classroom Alert{% endif %}</h1>
+        <p class="subtitle text-muted">Broadcast room changes, class cancellations, schedule shifts, or urgent notices to students.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="table-card p-4">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label text-light fw-semibold">Alert Title <span class="text-danger">*</span></label>
+                    {{ form.title }}
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Alert Type <span class="text-danger">*</span></label>
+                        {{ form.alert_type }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Priority Level <span class="text-danger">*</span></label>
+                        {{ form.priority }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Room Number / Location <span class="text-danger">*</span></label>
+                        {{ form.room_number }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-light fw-semibold">Subject / Lecture (Optional)</label>
+                        {{ form.subject }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-light fw-semibold">Target Department (Leave blank for all departments)</label>
+                    {{ form.department }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-light fw-semibold">Detailed Message / Instructions <span class="text-danger">*</span></label>
+                    {{ form.message }}
+                </div>
+
+                <div class="form-check mb-4">
+                    {{ form.is_active }}
+                    <label class="form-check-label text-light ms-2">Mark as Active Alert (Visible to students instantly)</label>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'classroom_alert_list' %}" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="background: var(--primary-gradient); border: none;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> {% if is_edit %}Update Alert{% else %}Broadcast Alert{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

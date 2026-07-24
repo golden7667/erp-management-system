@@ -1,0 +1,10 @@
+# Python / Django ignore
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.env
+
+# Media uploads (optional)
+media/
