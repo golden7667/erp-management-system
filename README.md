@@ -20,17 +20,6 @@
 
 The application enforces strict data isolation and security by implementing a **Custom Django Database Router** distributing data across 4 dedicated SQLite engines:
 
-```mermaid
-graph TD
-    User([HTTP Request / Browser]) --> Router[Django Multi-DB Router]
-    
-    subgraph Storage Layer
-        Router -->|Auth & Users| DB1[(admin_db.sqlite3)]
-        Router -->|Students & Grades| DB2[(students_db.sqlite3)]
-        Router -->|Faculty Profiles| DB3[(faculty_db.sqlite3)]
-        Router -->|Alerts, Timetable & Depts| DB4[(db.sqlite3 Default)]
-    end
-```
 
 ### Database Map
 | Database File | Django App | Handled Models / Domain |
