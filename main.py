@@ -1,3 +1,4 @@
-from college_erp.asgi import app
+from college_erp.wsgi import application
 
-application = app
+app = application
+
