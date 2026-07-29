@@ -21,9 +21,8 @@ environ.Env.read_env(str(BASE_DIR / '.env'))
 # Security Configuration
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-fallback-secret-key-1234')
 DEBUG = env('DEBUG', default=True)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
-if '*' not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('*')
+ALLOWED_HOSTS = ['*', '.vercel.app', 'localhost', '127.0.0.1']
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vercel.app',
