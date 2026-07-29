@@ -6,5 +6,7 @@ venv/
 .venv/
 .env
 
-# Media uploads (optional)
-media/
+# Media uploads tracked for deployment
+!media/
+!media/*
+
