@@ -6,7 +6,6 @@
   <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" />
   <img src="https://img.shields.io/badge/SQLite3-Multi--DB-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
   <img src="https://img.shields.io/badge/REST%20API-JWT-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="REST API" />
-  <img src="https://img.shields.io/badge/Vercel-Serverless-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
   <img src="https://img.shields.io/badge/UI/UX-Glassmorphism-FF69B4?style=for-the-badge" alt="Glassmorphism" />
 </p>
 
@@ -25,22 +24,6 @@
 
 The system enforces strict data security and domain separation through a custom Django database router (`college_erp/router.py`) that seamlessly isolates operations across **4 dedicated SQLite database engines**:
 
-```text
-                                  ┌───────────────────────────────┐
-                                  │   ERPDatabaseRouter (Django)  │
-                                  └───────────────┬───────────────┘
-                                                  │
-         ┌──────────────────┬─────────────────────┼─────────────────────┐
-         ▼                  ▼                     ▼                     ▼
-   ┌───────────┐      ┌───────────┐         ┌───────────┐         ┌───────────┐
-   │ Accounts  │      │ Students  │         │  Faculty  │         │  Core /   │
-   │   App     │      │    App    │         │    App    │         │ Depts App │
-   └─────┬─────┘      └─────┬─────┘         └─────┬─────┘         └─────┬─────┘
-         │                  │                     │                     │
-         ▼                  ▼                     ▼                     ▼
-   🛡️ admin_db        🎓 students_db         👨‍🏫 faculty_db          🏛️ db.sqlite3
-  (User Roles & Auth) (Profiles, Attendance) (Faculty Profiles)   (Depts, Alerts, Grid)
-```
 
 ### Database Routing Specification
 
@@ -134,10 +117,7 @@ erpsystem/
 
 ### Step 1: Clone Repository & Create Virtual Environment
 
-```bash
-git clone https://github.com/golden7667/erp-management-system.git
-cd erp-management-system
-
+ 
 # On Windows (PowerShell)
 python -m venv venv
 .\venv\Scripts\Activate.ps1
@@ -212,22 +192,7 @@ GET  /faculty/api/faculty/             # JSON list of faculty directory
 GET  /departments/api/alerts/          # JSON list of active classroom alerts
 ```
 
----
-
-## ☁️ Vercel Deployment Guide
-
-This project is fully configured for **Vercel Serverless Execution**:
-
-* **WSGI Routing**: Requests are bridged via `api/index.py`.
-* **Serverless SQLite Handling**: `college_erp/settings.py` detects serverless runtime and automatically copies initial SQLite databases to Vercel's writable `/tmp` directory.
-* **WhiteNoise Static Delivery**: Serves compiled static assets efficiently in serverless environments.
-
-To deploy using Vercel CLI:
-```bash
-npm install -g vercel
-vercel
-```
-
+ 
 ---
 
 ## 📄 License & Attribution
