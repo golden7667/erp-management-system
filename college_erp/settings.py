@@ -111,8 +111,24 @@ DATABASES = {
     'admin': env.db('ADMIN_DATABASE_URL', default=f"sqlite:///{DB_DIR / 'admin_db.sqlite3'}"),
 }
 
+if IS_VERCEL:
+    TMP_DIR = Path('/tmp')
+    DATABASES['default']['NAME'] = str(TMP_DIR / 'db.sqlite3')
+    DATABASES['students']['NAME'] = str(TMP_DIR / 'students_db.sqlite3')
+    DATABASES['faculty']['NAME'] = str(TMP_DIR / 'faculty_db.sqlite3')
+    DATABASES['admin']['NAME'] = str(TMP_DIR / 'admin_db.sqlite3')
+    
+    # Disconnect update_last_login signal on Vercel read-only lambda initialization
+    try:
+        from django.contrib.auth.models import update_last_login
+        from django.contrib.auth.signals import user_logged_in
+        user_logged_in.disconnect(update_last_login)
+    except Exception:
+        pass
+
 # Cookie-based sessions for stateless Vercel serverless environment
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 
 
 
