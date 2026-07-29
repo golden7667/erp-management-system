@@ -86,12 +86,34 @@ ASGI_APPLICATION = 'college_erp.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+import shutil
+
+# Detect Vercel serverless environment
+IS_VERCEL = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ or os.path.exists('/var/task')
+
+DB_DIR = BASE_DIR
+if IS_VERCEL:
+    TMP_DIR = Path('/tmp')
+    for db_name in ['db.sqlite3', 'admin_db.sqlite3', 'students_db.sqlite3', 'faculty_db.sqlite3']:
+        src_path = BASE_DIR / db_name
+        dest_path = TMP_DIR / db_name
+        if src_path.exists() and not dest_path.exists():
+            try:
+                shutil.copy2(src_path, dest_path)
+            except Exception:
+                pass
+    DB_DIR = TMP_DIR
+
 DATABASES = {
-    'default': env.db('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-    'students': env.db('STUDENTS_DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'students_db.sqlite3'}"),
-    'faculty': env.db('FACULTY_DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'faculty_db.sqlite3'}"),
-    'admin': env.db('ADMIN_DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'admin_db.sqlite3'}"),
+    'default': env.db('DATABASE_URL', default=f"sqlite:///{DB_DIR / 'db.sqlite3'}"),
+    'students': env.db('STUDENTS_DATABASE_URL', default=f"sqlite:///{DB_DIR / 'students_db.sqlite3'}"),
+    'faculty': env.db('FACULTY_DATABASE_URL', default=f"sqlite:///{DB_DIR / 'faculty_db.sqlite3'}"),
+    'admin': env.db('ADMIN_DATABASE_URL', default=f"sqlite:///{DB_DIR / 'admin_db.sqlite3'}"),
 }
+
+# Cookie-based sessions for stateless Vercel serverless environment
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 
 
 # Password validation
