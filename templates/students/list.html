@@ -53,10 +53,11 @@
                 <tr>
                     <td>
                         {% if student.photo %}
-                            <img src="{{ student.photo.url }}" alt="Photo" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;">
+                            <img src="{{ student.photo.url }}" alt="Photo" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/adventurer/svg?seed={{ student.user.username }}';">
                         {% else %}
                             <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student.user.username }}" alt="Default" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; background: var(--bg-tertiary);">
                         {% endif %}
+
                     </td>
                     <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
                     <td><code>{{ student.roll_number }}</code></td>

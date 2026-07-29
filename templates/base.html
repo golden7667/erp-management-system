@@ -88,7 +88,8 @@
                     </label>
                 </div>
                 <div class="user-profile" style="position: relative;">
-                    <img src="{% if user.is_authenticated %}{{ user.avatar_url }}{% else %}https://api.dicebear.com/7.x/adventurer/svg?seed=guest{% endif %}" alt="User Avatar" class="avatar" id="user-avatar" style="object-fit: cover;">
+                    <img src="{% if user.is_authenticated %}{{ user.avatar_url }}{% else %}https://api.dicebear.com/7.x/adventurer/svg?seed=guest{% endif %}" alt="User Avatar" class="avatar" id="user-avatar" style="object-fit: cover;" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/adventurer/svg?seed={{ user.username|default:\'guest\' }}';">
+
 
                     <div class="user-info" style="margin-right: 25px;">
                         <span class="user-name" id="user-display-name">

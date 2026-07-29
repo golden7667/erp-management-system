@@ -32,10 +32,11 @@
 
                 <div class="d-flex gap-4 align-items-center mb-4">
                     {% if student_profile.photo %}
-                        <img src="{{ student_profile.photo.url }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;">
+                        <img src="{{ student_profile.photo.url }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username|default:user.username }}';">
                     {% else %}
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ user.username }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username|default:user.username }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;">
                     {% endif %}
+
                     <div>
                         <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h4>
                         <span style="font-size: 0.8rem; color: #94a3b8;">Department of {{ student_profile.department.name|default:"Unassigned" }}</span>

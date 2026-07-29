@@ -54,10 +54,11 @@
                 <tr>
                     <td>
                         {% if fac.photo %}
-                            <img src="{{ fac.photo.url }}" alt="Photo" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;">
+                            <img src="{{ fac.photo.url }}" alt="Photo" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/initials/svg?seed={{ fac.first_name }}+{{ fac.last_name }}';">
                         {% else %}
                             <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ fac.first_name }}+{{ fac.last_name }}" alt="Default" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover; background: var(--bg-tertiary);">
                         {% endif %}
+
                     </td>
                     <td><strong>{{ fac.first_name }} {{ fac.last_name }}</strong></td>
                     <td><code>{{ fac.employee_id }}</code></td>

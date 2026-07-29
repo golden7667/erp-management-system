@@ -41,10 +41,11 @@
 
             <div class="mb-2">
                 {% if student_profile.photo %}
-                    <img src="{{ student_profile.photo.url }}" alt="Photo" style="width: 95px; height: 95px; object-fit: cover; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.3); box-shadow: 0 6px 15px rgba(0,0,0,0.4);">
+                    <img src="{{ student_profile.photo.url }}" alt="Photo" style="width: 95px; height: 95px; object-fit: cover; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.3); box-shadow: 0 6px 15px rgba(0,0,0,0.4);" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username|default:user.username }}';">
                 {% else %}
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username }}" alt="Photo" style="width: 95px; height: 95px; object-fit: cover; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.05);">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username|default:user.username }}" alt="Photo" style="width: 95px; height: 95px; object-fit: cover; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.05);">
                 {% endif %}
+
             </div>
             <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h4>
             <span style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600; margin-top: 2px;">{{ student_profile.department.name|default:"Unassigned Department" }}</span>
