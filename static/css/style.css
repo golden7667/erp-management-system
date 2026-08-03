@@ -1127,30 +1127,28 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li {
-        flex: 0 0 100%;
-        max-width: 100%;
-        min-width: 100%;
+        flex: 0 0 50%;
+        max-width: 50%;
+        min-width: 50%;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        scroll-snap-align: center;
+        scroll-snap-align: start;
         box-sizing: border-box;
-        padding: 0 6px;
+        padding: 0 3px;
     }
 
     .sidebar-nav li a {
-        display: inline-flex;
-        flex-direction: row;
+        display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        padding: 4px 14px;
-        width: auto;
-        max-width: 82%;
-        margin: 0 auto;
+        gap: 2px;
+        padding: 4px 6px;
+        width: 100%;
         border-radius: var(--border-radius-sm);
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         font-weight: 600;
         text-align: center;
         color: var(--text-secondary);
@@ -1159,14 +1157,14 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li a span {
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         font-weight: 600;
-        line-height: 1.2;
+        line-height: 1.1;
         white-space: nowrap;
     }
 
     .sidebar-nav li a i {
-        font-size: 0.95rem;
+        font-size: 1.05rem;
         width: auto;
         margin: 0;
     }
