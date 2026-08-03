@@ -1025,7 +1025,7 @@ input:checked + .slider:before {
         justify-content: center;
         cursor: pointer;
         z-index: 1200;
-        font-size: 0.65rem;
+        font-size: 0.62rem;
         box-shadow: 0 2px 8px rgba(99, 102, 241, 0.45);
         transition: all 0.2s ease;
     }
@@ -1054,7 +1054,7 @@ input:checked + .slider:before {
     .main-content {
         height: auto;
         min-height: 100vh;
-        padding-bottom: 64px; /* Space for ultra-compact bottom navigation bar */
+        padding-bottom: 56px; /* Space for small compact bottom navigation bar */
     }
 
     .sidebar {
@@ -1063,7 +1063,7 @@ input:checked + .slider:before {
         left: 0 !important;
         right: 0 !important;
         width: 100vw !important;
-        height: 58px !important;
+        height: 48px !important;
         background-color: var(--sidebar-bg) !important;
         border-top: 1px solid var(--sidebar-border) !important;
         border-right: none !important;
@@ -1100,8 +1100,8 @@ input:checked + .slider:before {
         width: 100%;
         height: 100%;
         gap: 0;
-        padding-left: 28px;
-        padding-right: 32px;
+        padding-left: 24px;
+        padding-right: 28px;
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
@@ -1114,7 +1114,7 @@ input:checked + .slider:before {
 
     .sidebar-nav ul::after {
         content: '';
-        flex: 0 0 32px;
+        flex: 0 0 28px;
         height: 100%;
         display: block;
     }
@@ -1133,20 +1133,22 @@ input:checked + .slider:before {
         justify-content: center;
         scroll-snap-align: center;
         box-sizing: border-box;
-        padding: 0 8px;
+        padding: 0 6px;
     }
 
     .sidebar-nav li a {
-        display: flex;
+        display: inline-flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 6px 16px;
-        width: 100%;
-        border-radius: var(--border-radius-md);
-        font-size: 0.82rem;
-        font-weight: 700;
+        gap: 6px;
+        padding: 4px 14px;
+        width: auto;
+        max-width: 82%;
+        margin: 0 auto;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.72rem;
+        font-weight: 600;
         text-align: center;
         color: var(--text-secondary);
         transition: all 0.2s ease;
@@ -1154,14 +1156,14 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li a span {
-        font-size: 0.82rem;
-        font-weight: 700;
+        font-size: 0.72rem;
+        font-weight: 600;
         line-height: 1.2;
         white-space: nowrap;
     }
 
     .sidebar-nav li a i {
-        font-size: 1.2rem;
+        font-size: 0.95rem;
         width: auto;
         margin: 0;
     }
