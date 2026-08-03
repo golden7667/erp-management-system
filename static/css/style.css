@@ -1098,8 +1098,8 @@ input:checked + .slider:before {
         align-items: center;
         width: 100%;
         height: 100%;
-        gap: 4px;
-        padding: 0 34px; /* Tightened room for arrow buttons */
+        gap: 6px;
+        padding: 0 34px; /* Room for arrow buttons */
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
@@ -1107,6 +1107,7 @@ input:checked + .slider:before {
         -ms-overflow-style: none; /* IE/Edge */
         -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
     }
 
     .sidebar-nav ul::-webkit-scrollbar {
@@ -1115,9 +1116,12 @@ input:checked + .slider:before {
 
     .sidebar-nav li {
         flex: 0 0 auto;
+        min-width: 88px;
         height: 100%;
         display: flex;
         align-items: center;
+        justify-content: center;
+        scroll-snap-align: start;
     }
 
     .sidebar-nav li a {
@@ -1126,7 +1130,8 @@ input:checked + .slider:before {
         align-items: center;
         justify-content: center;
         gap: 2px;
-        padding: 4px 9px;
+        padding: 4px 6px;
+        width: 100%;
         border-radius: var(--border-radius-md);
         font-size: 0.68rem;
         font-weight: 600;

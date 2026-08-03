@@ -272,11 +272,11 @@
             if (navUl && prevNavBtn && nextNavBtn) {
                 prevNavBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    navUl.scrollBy({ left: -160, behavior: 'smooth' });
+                    navUl.scrollBy({ left: -240, behavior: 'smooth' }); // Move 2-3 buttons at a time
                 });
                 nextNavBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    navUl.scrollBy({ left: 160, behavior: 'smooth' });
+                    navUl.scrollBy({ left: 240, behavior: 'smooth' }); // Move 2-3 buttons at a time
                 });
             }
         });
