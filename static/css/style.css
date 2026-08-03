@@ -1272,20 +1272,60 @@ input:checked + .slider:before {
     }
 
     .sidebar.collapsed .user-profile {
+        display: flex;
+        flex-direction: column;
         justify-content: center;
-        padding: 4px;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        position: relative;
     }
 
     .sidebar.collapsed .user-profile .avatar {
         margin: 0;
     }
 
+    .sidebar.collapsed .btn-logout,
+    .sidebar.collapsed .btn-login-sidebar {
+        display: flex !important;
+        position: static !important;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--border-radius-md);
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        transition: all 0.25s ease;
+    }
+
     .sidebar.collapsed .btn-logout {
-        display: none !important;
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444 !important;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .sidebar.collapsed .btn-logout:hover {
+        background: #ef4444;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+    }
+
+    .sidebar.collapsed .btn-login-sidebar {
+        background: rgba(99, 102, 241, 0.12);
+        color: var(--primary-color) !important;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .sidebar.collapsed .btn-login-sidebar:hover {
+        background: var(--primary-gradient);
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
     }
 
     /* Floating Tooltips on Hover in Collapsed Mode */
-    .sidebar.collapsed .sidebar-nav li a::after {
+    .sidebar.collapsed .sidebar-nav li a::after,
+    .sidebar.collapsed .btn-logout::after,
+    .sidebar.collapsed .btn-login-sidebar::after {
         content: attr(data-title);
         position: absolute;
         left: 75px;
@@ -1307,7 +1347,9 @@ input:checked + .slider:before {
         z-index: 1000;
     }
 
-    .sidebar.collapsed .sidebar-nav li a:hover::after {
+    .sidebar.collapsed .sidebar-nav li a:hover::after,
+    .sidebar.collapsed .btn-logout:hover::after,
+    .sidebar.collapsed .btn-login-sidebar:hover::after {
         opacity: 1;
         visibility: visible;
     }
