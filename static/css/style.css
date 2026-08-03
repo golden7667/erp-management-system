@@ -1102,9 +1102,9 @@ input:checked + .slider:before {
         align-items: center;
         width: 100%;
         height: 100%;
-        gap: 4px;
-        padding-left: 20px;
-        padding-right: 24px;
+        gap: 2px;
+        padding-left: 14px;
+        padding-right: 18px;
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
@@ -1116,7 +1116,7 @@ input:checked + .slider:before {
 
     .sidebar-nav ul::after {
         content: '';
-        flex: 0 0 24px;
+        flex: 0 0 18px;
         height: 100%;
         display: block;
     }
@@ -1139,12 +1139,12 @@ input:checked + .slider:before {
         align-items: center;
         justify-content: center;
         gap: 1px;
-        padding: 2px 7px;
-        min-width: 68px;
+        padding: 2px 5px;
+        min-width: 60px;
         background: rgba(30, 41, 59, 0.85);
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius-sm);
-        font-size: 0.62rem;
+        font-size: 0.6rem;
         font-weight: 600;
         text-align: center;
         color: #f1f5f9 !important;
