@@ -222,3 +222,32 @@ def student_classroom_alerts(request):
 def student_timetable(request):
     return redirect('timetable_view')
 
+@login_required
+def student_admit_card(request, pk=None):
+    student = None
+    if pk:
+        student = get_object_or_404(Student, pk=pk)
+    elif hasattr(request.user, 'student_profile'):
+        student = request.user.student_profile
+    else:
+        student = Student.objects.first()
+
+    if not student:
+        messages.error(request, "No student profile found for Admit Card.")
+        return redirect('dashboard_home')
+
+    exam_schedule = [
+        {'code': 'CS-501', 'subject': 'Data Structures & Algorithms', 'date': 'Aug 12, 2026', 'time': '10:00 AM - 01:00 PM', 'room': 'Lab-102'},
+        {'code': 'CS-502', 'subject': 'Database Management Systems', 'date': 'Aug 14, 2026', 'time': '10:00 AM - 01:00 PM', 'room': 'Hall-A'},
+        {'code': 'CS-503', 'subject': 'Computer Networks & Security', 'date': 'Aug 17, 2026', 'time': '10:00 AM - 01:00 PM', 'room': 'Hall-B'},
+        {'code': 'CS-504', 'subject': 'Software Engineering & Agile', 'date': 'Aug 19, 2026', 'time': '10:00 AM - 01:00 PM', 'room': 'Lab-105'},
+        {'code': 'CS-505', 'subject': 'Web Technologies & Frameworks', 'date': 'Aug 21, 2026', 'time': '10:00 AM - 01:00 PM', 'room': 'Hall-C'},
+    ]
+
+    return render(request, 'students/admit_card.html', {
+        'student_profile': student,
+        'exam_schedule': exam_schedule,
+        'exam_name': 'End-Semester Theory Examinations - August 2026',
+        'exam_center': 'Smart College Main Campus, Examination Block-A'
+    })
+
