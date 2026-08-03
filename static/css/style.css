@@ -1411,6 +1411,107 @@ input:checked + .slider:before {
         opacity: 1;
         visibility: visible;
     }
+/* --- Mobile Offcanvas Drawer Menu --- */
+.mobile-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+}
+
+.mobile-drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-drawer-content {
+    width: 100%;
+    max-height: 82vh;
+    background: var(--sidebar-bg);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-top: 1.5px solid var(--border-color);
+    padding: 20px 18px 30px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+}
+
+.mobile-drawer-overlay.active .mobile-drawer-content {
+    transform: translateY(0);
+}
+
+.btn-close-drawer {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-close-drawer:hover {
+    background: var(--danger-color);
+    color: #fff;
+}
+
+.drawer-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.drawer-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.drawer-grid-item i {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    transition: all 0.2s ease;
+}
+
+.drawer-grid-item:hover,
+.drawer-grid-item:active {
+    background: var(--primary-gradient);
+    color: #ffffff !important;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+}
+
+.drawer-grid-item:hover i,
+.drawer-grid-item:active i {
+    color: #ffffff !important;
 }
 
 

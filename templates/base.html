@@ -14,7 +14,7 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Custom Theme Stylesheet -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=17.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=18.0">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="dark-theme">
@@ -39,6 +39,9 @@
                     <ul>
                         <li class="{% block active_dashboard %}{% endblock %}">
                             <a href="{% url 'dashboard_home' %}" data-title="Dashboard"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a>
+                        </li>
+                        <li class="d-lg-none">
+                            <a href="#" id="mobile-menu-trigger-btn" data-title="All Modules"><i class="fa-solid fa-bars-staggered"></i> <span>All Modules</span></a>
                         </li>
                         <li class="{% block active_departments %}{% endblock %}">
                             <a href="{% url 'department_list' %}" data-title="Departments"><i class="fa-solid fa-network-wired"></i> <span>Departments</span></a>
@@ -285,6 +288,32 @@
                     if (!items.length) return;
                     const itemWidth = items[0].getBoundingClientRect().width;
                     navUl.scrollBy({ left: itemWidth, behavior: 'smooth' });
+                });
+            }
+
+            // Mobile Drawer Overlay Script
+            const mobileMenuBtn = document.getElementById('mobile-menu-trigger-btn');
+            const drawerOverlay = document.getElementById('mobile-drawer-overlay');
+            const closeDrawerBtn = document.getElementById('close-mobile-drawer-btn');
+
+            if (mobileMenuBtn && drawerOverlay) {
+                mobileMenuBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    drawerOverlay.classList.add('active');
+                });
+            }
+
+            if (closeDrawerBtn && drawerOverlay) {
+                closeDrawerBtn.addEventListener('click', () => {
+                    drawerOverlay.classList.remove('active');
+                });
+            }
+
+            if (drawerOverlay) {
+                drawerOverlay.addEventListener('click', (e) => {
+                    if (e.target === drawerOverlay) {
+                        drawerOverlay.classList.remove('active');
+                    }
                 });
             }
         });
