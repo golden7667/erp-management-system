@@ -227,12 +227,16 @@
 
 <!-- New Row: Classroom Alerts & Today's Schedule -->
 <div class="row mt-2">
-    <!-- Classroom Alerts Widget -->
+    <!-- Notice Board Widget -->
     <div class="col-lg-6 mb-4">
         <div class="table-card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="m-0"><i class="fa-solid fa-bullhorn text-danger me-2"></i> Active Classroom Alerts</h3>
-                <a href="{% url 'classroom_alert_list' %}" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-arrow-right"></i> View All</a>
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: rgba(99, 102, 241, 0.08);">
+                <h3 class="m-0 text-white" style="font-size: 1.1rem; font-weight: 700;">
+                    <i class="fa-solid fa-scroll text-warning me-2"></i> College Notice Board & Announcements
+                </h3>
+                <a href="{% url 'classroom_alert_list' %}" class="btn btn-outline-primary btn-sm" style="font-size: 0.78rem;">
+                    <i class="fa-solid fa-bell me-1"></i> View All Notices
+                </a>
             </div>
             <div class="p-3">
                 {% if classroom_alerts %}
@@ -253,17 +257,37 @@
                                     font-size: 0.72rem; font-weight: 700;">
                                     {{ alert.get_alert_type_display }}
                                 </span>
-                                <span class="badge bg-secondary text-white" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1"></i>{{ alert.room_number }}</span>
+                                <span class="badge bg-secondary text-white" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1"></i>{{ alert.room_number|default:"Main Block" }}</span>
                             </div>
                             <h5 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: #f8fafc;">{{ alert.title }}</h5>
-                            <p class="text-muted m-0 mt-1" style="font-size: 0.82rem; line-height: 1.4;">{{ alert.message|truncatewords:15 }}</p>
+                            <p class="text-muted m-0 mt-1" style="font-size: 0.82rem; line-height: 1.4;">{{ alert.message }}</p>
                         </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center py-4 text-muted">
-                        <i class="fa-solid fa-circle-check text-success mb-2" style="font-size: 2rem;"></i>
-                        <p class="m-0" style="font-size: 0.88rem;">No urgent classroom alerts for your department right now.</p>
+                    <!-- Rich Sample Notices when DB alerts are empty -->
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 rounded border" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.08) !important; border-left: 4px solid #ef4444;">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 0.72rem; font-weight: 700;">
+                                    EXAM NOTICE
+                                </span>
+                                <span class="badge bg-secondary text-white" style="font-size: 0.75rem;"><i class="fa-regular fa-clock me-1"></i>Today</span>
+                            </div>
+                            <h5 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: #f8fafc;">Mid-Semester Examination Schedule Released</h5>
+                            <p class="text-muted m-0 mt-1" style="font-size: 0.82rem; line-height: 1.4;">All B.Tech & MCA students must submit internal assignments before mid-term exams starting next Monday.</p>
+                        </div>
+
+                        <div class="p-3 rounded border" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.08) !important; border-left: 4px solid #38bdf8;">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; font-size: 0.72rem; font-weight: 700;">
+                                    CAMPUS EVENT
+                                </span>
+                                <span class="badge bg-secondary text-white" style="font-size: 0.75rem;"><i class="fa-regular fa-calendar me-1"></i>Aug 10</span>
+                            </div>
+                            <h5 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: #f8fafc;">Annual Tech Symposium Registration Open</h5>
+                            <p class="text-muted m-0 mt-1" style="font-size: 0.82rem; line-height: 1.4;">Register for Hackathon and Paper Presentations through your department student coordinator.</p>
+                        </div>
                     </div>
                 {% endif %}
             </div>
