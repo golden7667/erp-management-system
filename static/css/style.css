@@ -1054,7 +1054,7 @@ input:checked + .slider:before {
     .main-content {
         height: auto;
         min-height: 100vh;
-        padding-bottom: 56px; /* Space for small compact bottom navigation bar */
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); /* Space for iPhone bottom bar */
     }
 
     .sidebar {
@@ -1063,11 +1063,12 @@ input:checked + .slider:before {
         left: 0 !important;
         right: 0 !important;
         width: 100vw !important;
-        height: 48px !important;
+        height: calc(52px + env(safe-area-inset-bottom, 0px)) !important;
         background-color: var(--sidebar-bg) !important;
         border-top: 1px solid var(--sidebar-border) !important;
         border-right: none !important;
-        padding: 2px 0 max(2px, env(safe-area-inset-bottom)) !important;
+        padding-top: 2px !important;
+        padding-bottom: max(4px, env(safe-area-inset-bottom, 4px)) !important;
         z-index: 999999 !important;
         display: flex !important;
         flex-direction: row !important;
@@ -1076,6 +1077,8 @@ input:checked + .slider:before {
         box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5) !important;
         backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
         overflow: visible !important;
     }
 
