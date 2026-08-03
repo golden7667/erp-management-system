@@ -1136,6 +1136,11 @@ input:checked + .slider:before {
         padding: 0 3px;
     }
 
+    .sidebar-nav li:last-child {
+        scroll-snap-align: end !important;
+        margin-right: 38px !important;
+    }
+
     .sidebar-nav li a {
         display: flex;
         flex-direction: column;
