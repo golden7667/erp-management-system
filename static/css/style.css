@@ -1015,18 +1015,18 @@ input:checked + .slider:before {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        width: 22px;
-        height: 22px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         background: var(--primary-gradient);
-        border: 1.5px solid var(--sidebar-bg);
+        border: 1px solid var(--sidebar-bg);
         color: #ffffff !important;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         z-index: 1200;
-        font-size: 0.62rem;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.45);
+        font-size: 0.55rem;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.45);
         transition: all 0.2s ease;
     }
 
@@ -1034,15 +1034,15 @@ input:checked + .slider:before {
     .nav-slide-btn:active {
         color: #ffffff !important;
         transform: translateY(-50%) scale(1.15);
-        box-shadow: 0 3px 12px rgba(99, 102, 241, 0.6);
+        box-shadow: 0 3px 10px rgba(99, 102, 241, 0.6);
     }
 
     .nav-slide-btn.prev-btn {
-        left: 3px;
+        left: 2px;
     }
 
     .nav-slide-btn.next-btn {
-        right: 3px;
+        right: 2px;
     }
 
     .app-container {
@@ -1054,7 +1054,7 @@ input:checked + .slider:before {
     .main-content {
         height: auto;
         min-height: 100vh;
-        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); /* Space for iPhone bottom bar */
+        padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px)); /* Space for iPhone bottom bar */
     }
 
     .sidebar {
@@ -1063,12 +1063,12 @@ input:checked + .slider:before {
         left: 0 !important;
         right: 0 !important;
         width: 100vw !important;
-        height: calc(52px + env(safe-area-inset-bottom, 0px)) !important;
+        height: calc(44px + env(safe-area-inset-bottom, 0px)) !important;
         background-color: var(--sidebar-bg) !important;
         border-top: 1px solid var(--sidebar-border) !important;
         border-right: none !important;
-        padding-top: 2px !important;
-        padding-bottom: max(4px, env(safe-area-inset-bottom, 4px)) !important;
+        padding-top: 1px !important;
+        padding-bottom: max(2px, env(safe-area-inset-bottom, 2px)) !important;
         z-index: 999999 !important;
         display: flex !important;
         flex-direction: row !important;
@@ -1102,9 +1102,9 @@ input:checked + .slider:before {
         align-items: center;
         width: 100%;
         height: 100%;
-        gap: 6px;
-        padding-left: 32px;
-        padding-right: 36px;
+        gap: 4px;
+        padding-left: 20px;
+        padding-right: 24px;
         overflow-x: auto;
         overflow-y: hidden;
         white-space: nowrap;
@@ -1116,7 +1116,7 @@ input:checked + .slider:before {
 
     .sidebar-nav ul::after {
         content: '';
-        flex: 0 0 36px;
+        flex: 0 0 24px;
         height: 100%;
         display: block;
     }
@@ -1138,23 +1138,23 @@ input:checked + .slider:before {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
-        padding: 4px 12px;
-        min-width: 82px;
+        gap: 1px;
+        padding: 2px 7px;
+        min-width: 68px;
         background: rgba(30, 41, 59, 0.85);
         border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-md);
-        font-size: 0.7rem;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.62rem;
         font-weight: 600;
         text-align: center;
         color: #f1f5f9 !important;
         transition: all 0.2s ease;
         white-space: nowrap;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .sidebar-nav li a span {
-        font-size: 0.68rem;
+        font-size: 0.6rem;
         font-weight: 600;
         line-height: 1.1;
         white-space: nowrap;
@@ -1162,7 +1162,7 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li a i {
-        font-size: 1.05rem;
+        font-size: 0.88rem;
         width: auto;
         margin: 0;
         color: var(--primary-color);
