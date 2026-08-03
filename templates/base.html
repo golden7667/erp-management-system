@@ -14,7 +14,7 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Custom Theme Stylesheet -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=24.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=25.0">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="dark-theme">
@@ -337,12 +337,12 @@
             if (navUl && prevNavBtn && nextNavBtn) {
                 prevNavBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    navUl.scrollBy({ left: -220, behavior: 'smooth' });
+                    navUl.scrollBy({ left: -(navUl.clientWidth - 20), behavior: 'smooth' });
                 });
 
                 nextNavBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    navUl.scrollBy({ left: 220, behavior: 'smooth' });
+                    navUl.scrollBy({ left: (navUl.clientWidth - 20), behavior: 'smooth' });
                 });
             }
 
