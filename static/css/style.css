@@ -1127,16 +1127,16 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li {
-        flex: 0 0 25%;
-        max-width: 25%;
-        min-width: 25%;
+        flex: 0 0 20%;
+        max-width: 20%;
+        min-width: 20%;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         scroll-snap-align: start;
         box-sizing: border-box;
-        padding: 0 2px;
+        padding: 0 1px;
     }
 
     .sidebar-nav li a {
@@ -1145,12 +1145,12 @@ input:checked + .slider:before {
         align-items: center;
         justify-content: center;
         gap: 1px;
-        padding: 2px 2px;
+        padding: 2px 1px;
         width: 100%;
         background: rgba(30, 41, 59, 0.85);
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius-sm);
-        font-size: 0.58rem;
+        font-size: 0.54rem;
         font-weight: 600;
         text-align: center;
         color: #f1f5f9 !important;
@@ -1161,7 +1161,7 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li a span {
-        font-size: 0.56rem;
+        font-size: 0.52rem;
         font-weight: 600;
         line-height: 1.1;
         white-space: nowrap;
@@ -1172,7 +1172,7 @@ input:checked + .slider:before {
     }
 
     .sidebar-nav li a i {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         width: auto;
         margin: 0;
         color: var(--primary-color);
