@@ -32,7 +32,10 @@
                     </button>
                 </div>
                 
-                <nav class="sidebar-nav">
+                <nav class="sidebar-nav" style="position: relative;">
+                    <button type="button" class="nav-slide-btn prev-btn d-lg-none" id="nav-slide-prev" title="Slide Left">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
                     <ul>
                         <li class="{% block active_dashboard %}{% endblock %}">
                             <a href="{% url 'dashboard_home' %}" data-title="Dashboard"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a>
@@ -80,7 +83,9 @@
                             {% endif %}
                         {% endif %}
                     </ul>
-
+                    <button type="button" class="nav-slide-btn next-btn d-lg-none" id="nav-slide-next" title="Slide Right">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </nav>
             </div>
 
@@ -257,6 +262,22 @@
                 setTimeout(() => {
                     activeNavItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }, 100);
+            }
+
+            // Mobile bottom nav left/right arrow slide buttons
+            const navUl = document.querySelector('.sidebar-nav ul');
+            const prevNavBtn = document.getElementById('nav-slide-prev');
+            const nextNavBtn = document.getElementById('nav-slide-next');
+
+            if (navUl && prevNavBtn && nextNavBtn) {
+                prevNavBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navUl.scrollBy({ left: -160, behavior: 'smooth' });
+                });
+                nextNavBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navUl.scrollBy({ left: 160, behavior: 'smooth' });
+                });
             }
         });
     </script>
