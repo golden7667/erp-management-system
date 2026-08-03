@@ -1135,7 +1135,67 @@ input:checked + .slider:before {
     .mobile-logo .logo-text span {
         color: var(--primary-color);
     }
+
+    /* Mobile Header & Container Polishing */
+    .main-header {
+        padding: 10px 14px;
+        min-height: 60px;
+    }
+
+    .header-search {
+        max-width: 160px;
+    }
+
+    .header-search input {
+        padding: 6px 10px 6px 32px;
+        font-size: 0.85rem;
+    }
+
+    .views-container {
+        padding: 14px 10px;
+    }
+
+    .view-header h1 {
+        font-size: 1.45rem;
+    }
+
+    /* Make all tables smoothly scrollable on mobile */
+    .table-card,
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        min-width: 500px; /* Ensures table columns don't get squished */
+    }
 }
+
+@media (max-width: 400px) {
+    .header-search {
+        display: none; /* Hide global search on very small mobile screens for clean header */
+    }
+
+    .id-card-scene,
+    .id-card-slider-track-container {
+        width: 290px !important;
+        height: 420px !important;
+    }
+
+    .id-card-slider-track {
+        width: 580px !important;
+    }
+
+    .id-card-slider-track.slide-to-back {
+        transform: translateX(-290px) !important;
+    }
+
+    .id-card-slide-item {
+        width: 290px !important;
+        padding: 14px !important;
+    }
+}
+
 
 /* --- Sidebar Minimize / Collapsed (Desktop) --- */
 .sidebar-toggle-btn {
