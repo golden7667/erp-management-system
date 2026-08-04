@@ -99,3 +99,40 @@ class GradeForm(forms.ModelForm):
             'grade': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. A, B+, 95/100'}),
             'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Provide feedback to the student...'}),
         }
+
+
+from .models import ExamMark
+
+class ExamMarkForm(forms.ModelForm):
+    class Meta:
+        model = ExamMark
+        fields = ('student', 'semester', 'subject_code', 'subject_name', 'credits', 'internal_marks', 'mid_sem_marks', 'final_sem_marks')
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-select'}),
+            'semester': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 8}),
+            'subject_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. CS-501'}),
+            'subject_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Data Structures & Algorithms'}),
+            'credits': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 6}),
+            'internal_marks': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.5', 'min': 0, 'max': 30, 'placeholder': 'Internal (Max 30)'}),
+            'mid_sem_marks': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.5', 'min': 0, 'max': 30, 'placeholder': 'Mid-Sem (Max 30)'}),
+            'final_sem_marks': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.5', 'min': 0, 'max': 40, 'placeholder': 'Final-Sem (Max 40)'}),
+        }
+
+    def clean_internal_marks(self):
+        val = self.cleaned_data.get('internal_marks', 0)
+        if val is not None and (val < 0 or val > 30):
+            raise forms.ValidationError("Internal marks must be between 0 and 30.")
+        return val
+
+    def clean_mid_sem_marks(self):
+        val = self.cleaned_data.get('mid_sem_marks', 0)
+        if val is not None and (val < 0 or val > 30):
+            raise forms.ValidationError("Mid Semester marks must be between 0 and 30.")
+        return val
+
+    def clean_final_sem_marks(self):
+        val = self.cleaned_data.get('final_sem_marks', 0)
+        if val is not None and (val < 0 or val > 40):
+            raise forms.ValidationError("Final Semester marks must be between 0 and 40.")
+        return val
+

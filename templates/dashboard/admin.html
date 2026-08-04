@@ -26,6 +26,26 @@
 
 </div>
 
+<!-- QUICK STUDENT DASHBOARD ERP ID / ROLL NUMBER SEARCH BAR -->
+<div class="table-card p-3 mb-4" style="background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(30,27,75,0.4) 100%); border: 1.5px solid rgba(99,102,241,0.25);">
+    <form method="get" action="{% url 'student_dashboard' %}" class="row g-2 align-items-center">
+        <div class="col-md-8 col-lg-9">
+            <label class="form-label text-white small fw-bold text-uppercase mb-1">
+                <i class="fa-solid fa-magnifying-glass text-indigo me-1"></i> Open Student Dashboard by Roll Number / ERP ID
+            </label>
+            <div class="input-group">
+                <span class="input-group-text style-input-text" style="background: var(--bg-tertiary); color: var(--text-muted); border-color: var(--border-color);"><i class="fa-solid fa-user-graduate"></i></span>
+                <input type="text" name="roll_number" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" placeholder="Enter Student Roll Number / ERP ID (e.g. CS-2026-992, EE-2026-102, or student name)..." required>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-3 mt-md-4">
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2">
+                <i class="fa-solid fa-gauge-high"></i> Open Dashboard
+            </button>
+        </div>
+    </form>
+</div>
+
 <!-- Metrics Stats Grid -->
 <div class="metrics-grid">
     <div class="metric-card card-glow-violet">
@@ -110,6 +130,9 @@
                         <td>{{ student.department.name|default:"Unassigned" }}</td>
                         <td>
                             <div class="d-flex gap-1">
+                                <a href="{% url 'student_dashboard_view' student.pk %}" class="btn btn-outline-primary btn-sm" title="Open Student Dashboard">
+                                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                                </a>
                                 <a href="{% url 'student_id_card' student.pk %}" class="btn btn-outline btn-sm btn-action-icon" title="ID Card">
                                     <i class="fa-solid fa-id-card"></i>
                                 </a>

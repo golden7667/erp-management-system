@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.db.models import Q
 import django.utils.timezone
 
-from .models import Student, Assignment, AssignmentSubmission
-from .forms import StudentForm, StudentUserForm, SubmissionForm, StudentProfileEditForm
+from .models import Student, Assignment, AssignmentSubmission, ExamMark, ExamPublishControl
+from .forms import StudentForm, StudentUserForm, SubmissionForm, StudentProfileEditForm, ExamMarkForm
 from accounts.models import User
 
 @login_required
@@ -194,14 +194,22 @@ def student_results(request):
         messages.error(request, "Student profile does not exist.")
         return redirect('dashboard_home')
         
-    gpa = student.semester_result_gpa
-    if gpa >= 9.0:
-        standing = 'Excellent (First Class Distinction)'
+    # Check Exam Controller publish status
+    control = ExamPublishControl.get_control_for(department=student.department, semester=1)
+    results_published = control.results_published if control else True
+
+    cgpa = student.get_cgpa()
+    semester_results = student.get_all_semester_results()
+    total_credits = student.get_total_credits()
+    latest_gpa = semester_results[-1]['gpa'] if semester_results else cgpa
+    
+    if cgpa >= 9.0:
+        standing = 'Outstanding (First Class Distinction)'
         gpa_class = 'text-success'
-    elif gpa >= 7.5:
+    elif cgpa >= 7.5:
         standing = 'Very Good (First Class)'
         gpa_class = 'text-info'
-    elif gpa >= 5.0:
+    elif cgpa >= 5.0:
         standing = 'Good (Second Class)'
         gpa_class = 'text-warning'
     else:
@@ -210,8 +218,14 @@ def student_results(request):
         
     return render(request, 'students/results.html', {
         'student_profile': student,
+        'cgpa': cgpa,
+        'latest_gpa': latest_gpa,
+        'total_credits': total_credits,
+        'semester_results': semester_results,
         'standing': standing,
-        'gpa_class': gpa_class
+        'gpa_class': gpa_class,
+        'results_published': results_published,
+        'control': control,
     })
 
 @login_required
@@ -224,13 +238,32 @@ def student_timetable(request):
 
 @login_required
 def student_admit_card(request, pk=None):
+    all_students = None
     student = None
-    if pk:
-        student = get_object_or_404(Student, pk=pk)
-    elif hasattr(request.user, 'student_profile'):
-        student = request.user.student_profile
+
+    if request.user.is_admin or request.user.is_exam_controller or request.user.is_faculty:
+        all_students = Student.objects.prefetch_related('department').all().order_by('roll_number')
+        if request.user.is_faculty and not (request.user.is_admin or request.user.is_exam_controller):
+            faculty = getattr(request.user, 'faculty_profile', None)
+            if faculty and faculty.department:
+                all_students = all_students.filter(department=faculty.department)
+        student_id = request.GET.get('student_id') or pk
+        if student_id:
+            student = get_object_or_404(Student, pk=student_id)
+        else:
+            student = all_students.first()
+        admit_card_published = True
+        control = ExamPublishControl.get_control_for(department=student.department if student else None, semester=1)
     else:
-        student = Student.objects.first()
+        # Student user
+        try:
+            student = request.user.student_profile
+        except Student.DoesNotExist:
+            messages.error(request, "No student profile found for your account.")
+            return redirect('dashboard_home')
+
+        control = ExamPublishControl.get_control_for(department=student.department, semester=1)
+        admit_card_published = control.admit_card_published if control else True
 
     if not student:
         messages.error(request, "No student profile found for Admit Card.")
@@ -246,8 +279,11 @@ def student_admit_card(request, pk=None):
 
     return render(request, 'students/admit_card.html', {
         'student_profile': student,
+        'all_students': all_students,
         'exam_schedule': exam_schedule,
-        'exam_name': 'End-Semester Theory Examinations - August 2026',
-        'exam_center': 'Smart College Main Campus, Examination Block-A'
+        'exam_name': control.exam_name if control else 'End-Semester Theory Examinations - August 2026',
+        'exam_center': control.exam_center if control else 'Smart College Main Campus, Examination Block-A',
+        'admit_card_published': admit_card_published,
+        'control': control,
     })
 

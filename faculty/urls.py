@@ -14,6 +14,9 @@ urlpatterns = [
     path('profile/edit/', views.faculty_profile_edit, name='faculty_profile_edit'),
     path('attendance/', views.faculty_attendance_manage, name='faculty_attendance_manage'),
     path('results/', views.faculty_results_manage, name='faculty_results_manage'),
+    path('examination/add/', views.add_exam_mark, name='add_exam_mark'),
+    path('examination/edit/<int:pk>/', views.edit_exam_mark, name='edit_exam_mark'),
+    path('examination/delete/<int:pk>/', views.delete_exam_mark, name='delete_exam_mark'),
     path('alerts/', views.faculty_classroom_alerts, name='faculty_classroom_alerts'),
     path('timetable/', views.faculty_timetable, name='faculty_timetable'),
 ]

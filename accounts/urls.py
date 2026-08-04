@@ -18,6 +18,7 @@ urlpatterns = [
     path('student/login/', views.student_login_view, name='student_login'),
     path('faculty/login/', views.faculty_login_view, name='faculty_login'),
     path('admin/login/', views.admin_login_view, name='admin_login'),
+    path('exam-controller/login/', views.exam_controller_login_view, name='exam_controller_login'),
 
     # Admin password change for any user
     path('admin/change-password/<int:user_id>/', views.admin_change_user_password, name='admin_change_user_password'),

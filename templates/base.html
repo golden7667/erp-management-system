@@ -43,9 +43,11 @@
                         <li class="d-lg-none">
                             <a href="#" id="mobile-menu-trigger-btn" data-title="All Modules"><i class="fa-solid fa-bars-staggered"></i> <span>All Modules</span></a>
                         </li>
+                        {% if not user.is_authenticated or user.is_student or user.is_admin or user.is_exam_controller %}
                         <li class="{% block active_admit_card %}{% endblock %}">
                             <a href="{% url 'my_admit_card' %}" data-title="Exam Admit Card"><i class="fa-solid fa-id-card-clip"></i> <span>Exam Admit Card</span></a>
                         </li>
+                        {% endif %}
                         <li class="{% block active_departments %}{% endblock %}">
                             <a href="{% url 'department_list' %}" data-title="Departments"><i class="fa-solid fa-network-wired"></i> <span>Departments</span></a>
                         </li>
@@ -70,10 +72,10 @@
                         </li>
                         
                         <li class="{% block active_results %}{% endblock %}">
-                            {% if user.is_authenticated and user.is_faculty %}
-                                <a href="{% url 'faculty_results_manage' %}" data-title="Manage Results"><i class="fa-solid fa-square-poll-vertical"></i> <span>Semester Results</span></a>
-                            {% else %}
+                            {% if user.is_authenticated and user.is_student %}
                                 <a href="{% url 'student_results' %}" data-title="Semester Results"><i class="fa-solid fa-square-poll-vertical"></i> <span>Semester Results</span></a>
+                            {% else %}
+                                <a href="{% url 'faculty_results_manage' %}" data-title="Examination Module"><i class="fa-solid fa-square-poll-vertical"></i> <span>Examination Module</span></a>
                             {% endif %}
                         </li>
 
@@ -139,10 +141,6 @@
                     <input type="text" id="global-search" placeholder="Search records...">
                 </div>
                 <div class="header-actions">
-                    <a href="{% url 'my_admit_card' %}" class="btn btn-sm btn-warning d-flex align-items-center gap-1 me-2 shadow-sm text-dark fw-bold" style="font-size: 0.78rem; border-radius: 8px; padding: 4px 10px;">
-                        <i class="fa-solid fa-id-card-clip text-dark"></i>
-                        <span>Admit Card</span>
-                    </a>
                     <div class="theme-toggle-container d-lg-none me-2 ms-2">
                         <label class="switch">
                             <input type="checkbox" id="theme-toggle-mobile" checked>
@@ -239,12 +237,14 @@
                 <a href="{% if user.is_authenticated and user.is_faculty %}{% url 'faculty_assignments' %}{% else %}{% url 'student_assignments' %}{% endif %}" class="drawer-grid-item">
                     <i class="fa-solid fa-book-open"></i> <span>My Assignments</span>
                 </a>
-                <a href="{% if user.is_authenticated and user.is_faculty %}{% url 'faculty_results_manage' %}{% else %}{% url 'student_results' %}{% endif %}" class="drawer-grid-item">
-                    <i class="fa-solid fa-square-poll-vertical"></i> <span>Semester Results</span>
+                <a href="{% if user.is_authenticated and user.is_student %}{% url 'student_results' %}{% else %}{% url 'faculty_results_manage' %}{% endif %}" class="drawer-grid-item">
+                    <i class="fa-solid fa-square-poll-vertical"></i> <span>{% if user.is_authenticated and user.is_student %}Semester Results{% else %}Examination Module{% endif %}</span>
                 </a>
+                {% if not user.is_authenticated or user.is_student or user.is_admin or user.is_exam_controller %}
                 <a href="{% url 'my_admit_card' %}" class="drawer-grid-item">
                     <i class="fa-solid fa-id-card-clip"></i> <span>Exam Admit Card</span>
                 </a>
+                {% endif %}
                 {% if user.is_authenticated and user.is_faculty %}
                     <a href="{% url 'faculty_attendance_manage' %}" class="drawer-grid-item">
                         <i class="fa-solid fa-clipboard-user"></i> <span>Manage Attendance</span>

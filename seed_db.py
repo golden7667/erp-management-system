@@ -26,6 +26,16 @@ def seed():
         admin_user = User.objects.get(username='admin')
         print("Superuser already exists.")
 
+    # 1b. Create Examination Controller user
+    if not User.objects.filter(username='exam_controller').exists():
+        ec_user = User.objects.create_user(
+            username='exam_controller',
+            email='controller@smart.erp',
+            password='password123',
+            role='EXAM_CONTROLLER'
+        )
+        print("Exam Controller created: username='exam_controller', password='password123'")
+
     # 2. Create departments
     depts_data = [
         {"name": "Computer Science & Engineering", "code": "CSE", "description": "Branch of coding, algorithms, and computing systems"},
@@ -180,7 +190,74 @@ def seed():
             slot = TimetableSlot.objects.create(**t)
             print(f"Timetable slot created: {slot}")
 
+    # 7. Create mock Exam Marks (Internal, Mid-Sem, Final-Sem for GPA & CGPA calculation)
+    from students.models import ExamMark
+    all_students = Student.objects.all()
+    exam_data = {
+        "CS-2026-992": [
+            # Semester 1
+            {"semester": 1, "code": "CS-101", "name": "Mathematics-I", "credits": 4, "internal": 28.5, "mid": 27.5, "final": 38.0},
+            {"semester": 1, "code": "CS-102", "name": "Physics for Computing", "credits": 4, "internal": 26.0, "mid": 25.0, "final": 35.0},
+            {"semester": 1, "code": "CS-103", "name": "Basic Electrical Engg", "credits": 3, "internal": 27.0, "mid": 26.5, "final": 36.0},
+            {"semester": 1, "code": "CS-104", "name": "Programming in C", "credits": 4, "internal": 29.0, "mid": 28.5, "final": 38.5},
+            # Semester 2
+            {"semester": 2, "code": "CS-201", "name": "Data Structures & Algorithms", "credits": 4, "internal": 27.5, "mid": 28.0, "final": 37.0},
+            {"semester": 2, "code": "CS-202", "name": "Discrete Mathematics", "credits": 4, "internal": 25.5, "mid": 26.0, "final": 34.0},
+            {"semester": 2, "code": "CS-203", "name": "Digital Electronics", "credits": 3, "internal": 26.5, "mid": 27.0, "final": 35.5},
+            {"semester": 2, "code": "CS-204", "name": "Object Oriented Programming", "credits": 4, "internal": 28.0, "mid": 29.0, "final": 36.5},
+            # Semester 3
+            {"semester": 3, "code": "CS-301", "name": "Database Management Systems", "credits": 4, "internal": 27.0, "mid": 26.5, "final": 36.0},
+            {"semester": 3, "code": "CS-302", "name": "Computer Networks", "credits": 4, "internal": 28.0, "mid": 27.0, "final": 37.5},
+            {"semester": 3, "code": "CS-303", "name": "Operating Systems", "credits": 4, "internal": 29.0, "mid": 28.0, "final": 38.0},
+        ],
+        "EE-2026-102": [
+            # Semester 1
+            {"semester": 1, "code": "EE-101", "name": "Engineering Mathematics-I", "credits": 4, "internal": 24.0, "mid": 23.5, "final": 33.0},
+            {"semester": 1, "code": "EE-102", "name": "Circuit Theory", "credits": 4, "internal": 25.0, "mid": 24.0, "final": 34.5},
+            {"semester": 1, "code": "EE-103", "name": "Engineering Physics", "credits": 3, "internal": 23.0, "mid": 22.0, "final": 31.0},
+            # Semester 2
+            {"semester": 2, "code": "EE-201", "name": "Analog Electronics", "credits": 4, "internal": 26.0, "mid": 25.5, "final": 35.0},
+            {"semester": 2, "code": "EE-202", "name": "Electromagnetic Fields", "credits": 4, "internal": 24.5, "mid": 23.0, "final": 32.0},
+            # Semester 3
+            {"semester": 3, "code": "EE-301", "name": "Electrical Machines-I", "credits": 4, "internal": 25.0, "mid": 24.5, "final": 34.0},
+            {"semester": 3, "code": "EE-302", "name": "Control Systems", "credits": 4, "internal": 26.5, "mid": 25.0, "final": 35.5},
+        ],
+        "ME-2026-054": [
+            # Semester 1
+            {"semester": 1, "code": "ME-101", "name": "Mathematics-I", "credits": 4, "internal": 21.0, "mid": 20.0, "final": 28.0},
+            {"semester": 1, "code": "ME-102", "name": "Engineering Mechanics", "credits": 4, "internal": 22.0, "mid": 21.5, "final": 30.0},
+            # Semester 2
+            {"semester": 2, "code": "ME-201", "name": "Thermodynamics", "credits": 4, "internal": 23.0, "mid": 22.0, "final": 31.0},
+            {"semester": 2, "code": "ME-202", "name": "Fluid Mechanics", "credits": 4, "internal": 20.0, "mid": 19.5, "final": 27.5},
+            # Semester 3
+            {"semester": 3, "code": "ME-301", "name": "Kinematics of Machinery", "credits": 4, "internal": 22.5, "mid": 21.0, "final": 29.0},
+        ]
+    }
+
+    for st in all_students:
+        marks_list = exam_data.get(st.roll_number, [])
+        for mark in marks_list:
+            ExamMark.objects.get_or_create(
+                student=st,
+                semester=mark["semester"],
+                subject_code=mark["code"],
+                defaults={
+                    "subject_name": mark["name"],
+                    "credits": mark["credits"],
+                    "internal_marks": mark["internal"],
+                    "mid_sem_marks": mark["mid"],
+                    "final_sem_marks": mark["final"]
+                }
+            )
+            
+        # Update CGPA
+        cgpa = st.get_cgpa()
+        if st.semester_result_gpa != cgpa:
+            st.semester_result_gpa = cgpa
+            st.save(update_fields=['semester_result_gpa'])
+
     print("Seeding database complete!")
 
 if __name__ == '__main__':
     seed()
+

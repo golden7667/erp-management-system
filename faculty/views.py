@@ -6,8 +6,9 @@ from django.db.models import Q, Count
 from .models import Faculty
 from .forms import FacultyForm, FacultyUserForm, FacultyProfileEditForm
 from accounts.models import User
-from students.models import Student, Assignment, AssignmentSubmission
-from students.forms import AssignmentForm, GradeForm
+from departments.models import Department
+from students.models import Student, Assignment, AssignmentSubmission, ExamMark, ExamPublishControl
+from students.forms import AssignmentForm, GradeForm, ExamMarkForm
 
 @login_required
 def faculty_list(request):
@@ -287,45 +288,208 @@ def faculty_attendance_manage(request):
 
 @login_required
 def faculty_results_manage(request):
-    if not request.user.is_faculty:
+    if not (request.user.is_exam_controller or request.user.is_faculty or request.user.is_admin):
         messages.error(request, "Permission denied.")
         return redirect('dashboard_home')
         
-    try:
-        faculty = request.user.faculty_profile
-    except Faculty.DoesNotExist:
-        messages.error(request, "Faculty profile does not exist.")
-        return redirect('dashboard_home')
-        
-    students = Student.objects.filter(department=faculty.department).order_by('first_name', 'last_name')
+    faculty = getattr(request.user, 'faculty_profile', None)
+    departments = Department.objects.all()
     
+    # Selected department filter
+    dept_id = request.GET.get('department')
+    if dept_id:
+        selected_department = Department.objects.filter(pk=dept_id).first()
+    elif faculty and faculty.department:
+        selected_department = faculty.department
+    else:
+        selected_department = departments.first()
+
+    # Selected semester filter
+    semester_filter = request.GET.get('semester', '')
+    query = request.GET.get('q', '')
+
+    students = Student.objects.filter(department=selected_department).order_by('roll_number') if selected_department else Student.objects.all().order_by('roll_number')
+    
+    if query:
+        students = students.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(roll_number__icontains=query)
+        )
+
+    # Fetch exam marks
+    exam_marks = ExamMark.objects.filter(student__in=students).select_related('student').order_by('student', 'semester', 'subject_code')
+    if semester_filter:
+        try:
+            sem_num = int(semester_filter)
+            exam_marks = exam_marks.filter(semester=sem_num)
+        except ValueError:
+            pass
+
+    control = ExamPublishControl.get_control_for(department=selected_department, semester=1)
+
     if request.method == 'POST':
-        for student in students:
-            gpa_key = f'gpa_{student.id}'
-            assessment_key = f'assessment_{student.id}'
-            
-            if gpa_key in request.POST:
-                try:
-                    val = float(request.POST[gpa_key])
-                    if 0.0 <= val <= 10.0:
-                        student.semester_result_gpa = val
-                    else:
-                        messages.warning(request, f"Skipped invalid GPA value for {student.first_name}: {val} (must be 0-10)")
-                except ValueError:
-                    messages.warning(request, f"Skipped non-numeric GPA value for {student.first_name}")
-            
-            if assessment_key in request.POST:
-                student.assessment_status = request.POST[assessment_key]
-            
-            student.save()
-            
-        messages.success(request, "Semester results updated successfully!")
-        return redirect('faculty_results_manage')
+        action = request.POST.get('action', '')
         
+        if action == 'toggle_publish_results':
+            if not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Permission denied. Only Examination Controller or Admin can publish/unpublish semester results.")
+                return redirect(request.get_full_path())
+            control.results_published = not control.results_published
+            control.save()
+            st = "PUBLISHED" if control.results_published else "UNPUBLISHED (HELD)"
+            messages.success(request, f"Semester Results status set to {st} for {selected_department.name if selected_department else 'All Departments'}.")
+            return redirect(request.get_full_path())
+
+        elif action == 'toggle_publish_admit_card':
+            if not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Permission denied. Only Examination Controller or Admin can release/withdraw admit cards.")
+                return redirect(request.get_full_path())
+            control.admit_card_published = not control.admit_card_published
+            control.save()
+            st = "RELEASED / PUBLISHED" if control.admit_card_published else "HELD / UNPUBLISHED"
+            messages.success(request, f"Exam Admit Cards status set to {st} for {selected_department.name if selected_department else 'All Departments'}.")
+            return redirect(request.get_full_path())
+
+        elif action == 'update_exam_info':
+            if not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Permission denied. Only Examination Controller or Admin can change exam settings.")
+                return redirect(request.get_full_path())
+            control.exam_name = request.POST.get('exam_name', control.exam_name)
+            control.exam_center = request.POST.get('exam_center', control.exam_center)
+            control.academic_session = request.POST.get('academic_session', control.academic_session)
+            control.save()
+            messages.success(request, "Exam Controller details updated successfully!")
+            return redirect(request.get_full_path())
+
+        elif action == 'add_mark':
+            form = ExamMarkForm(request.POST)
+            if form.is_valid():
+                mark = form.save(commit=False)
+                # If faculty member, verify student belongs to their department
+                if faculty and not (request.user.is_exam_controller or request.user.is_admin):
+                    if mark.student.department != faculty.department:
+                        messages.error(request, "Permission denied. You can only enter marks for students in your department.")
+                        return redirect(request.get_full_path())
+                mark.save()
+                messages.success(request, f"Added exam mark for {mark.student.roll_number} - {mark.subject_code}!")
+                return redirect(request.get_full_path())
+            else:
+                messages.error(request, f"Failed to add mark: {form.errors.as_text()}")
+                
+        elif action == 'edit_mark':
+            mark_id = request.POST.get('mark_id')
+            mark = get_object_or_404(ExamMark, pk=mark_id)
+            if faculty and not (request.user.is_exam_controller or request.user.is_admin):
+                if mark.student.department != faculty.department:
+                    messages.error(request, "Permission denied. You can only update marks for students in your department.")
+                    return redirect(request.get_full_path())
+            form = ExamMarkForm(request.POST, instance=mark)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f"Updated marks for {mark.student.roll_number} ({mark.subject_code})!")
+                return redirect(request.get_full_path())
+            else:
+                messages.error(request, f"Failed to update mark: {form.errors.as_text()}")
+                
+        elif action == 'delete_mark':
+            mark_id = request.POST.get('mark_id')
+            mark = get_object_or_404(ExamMark, pk=mark_id)
+            if faculty and not (request.user.is_exam_controller or request.user.is_admin):
+                if mark.student.department != faculty.department:
+                    messages.error(request, "Permission denied. You can only delete marks for students in your department.")
+                    return redirect(request.get_full_path())
+            roll = mark.student.roll_number
+            code = mark.subject_code
+            mark.delete()
+            messages.success(request, f"Deleted exam mark for {roll} - {code}.")
+            return redirect(request.get_full_path())
+
+        elif action == 'batch_update':
+            for student in students:
+                assessment_key = f'assessment_{student.id}'
+                if assessment_key in request.POST:
+                    student.assessment_status = request.POST[assessment_key]
+                    student.save()
+            messages.success(request, "Assessment remarks updated successfully!")
+            return redirect(request.get_full_path())
+
+    mark_form = ExamMarkForm()
+    
+    student_summaries = []
+    for st in students:
+        student_summaries.append({
+            'student': st,
+            'cgpa': st.get_cgpa(),
+            'total_credits': st.get_total_credits(),
+            'semester_results': st.get_all_semester_results(),
+            'marks': exam_marks.filter(student=st)
+        })
+
     return render(request, 'faculty/results_manage.html', {
         'students': students,
-        'faculty': faculty
+        'student_summaries': student_summaries,
+        'exam_marks': exam_marks,
+        'mark_form': mark_form,
+        'faculty': faculty,
+        'departments': departments,
+        'selected_department': selected_department,
+        'selected_semester': semester_filter,
+        'query': query,
+        'control': control,
     })
+
+@login_required
+def add_exam_mark(request):
+    if not (request.user.is_exam_controller or request.user.is_faculty or request.user.is_admin):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    if request.method == 'POST':
+        form = ExamMarkForm(request.POST)
+        if form.is_valid():
+            mark = form.save()
+            messages.success(request, f"Exam mark added successfully for {mark.student.roll_number} ({mark.subject_code}).")
+            return redirect('faculty_results_manage')
+        else:
+            messages.error(request, f"Failed to save exam mark: {form.errors.as_text()}")
+    else:
+        form = ExamMarkForm()
+        
+    return render(request, 'faculty/add_exam_mark.html', {'form': form})
+
+@login_required
+def edit_exam_mark(request, pk):
+    if not (request.user.is_exam_controller or request.user.is_faculty or request.user.is_admin):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    mark = get_object_or_404(ExamMark, pk=pk)
+    if request.method == 'POST':
+        form = ExamMarkForm(request.POST, instance=mark)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Updated exam mark for {mark.student.roll_number} - {mark.subject_code}.")
+            return redirect('faculty_results_manage')
+        else:
+            messages.error(request, f"Failed to update exam mark: {form.errors.as_text()}")
+    else:
+        form = ExamMarkForm(instance=mark)
+        
+    return render(request, 'faculty/edit_exam_mark.html', {'form': form, 'mark': mark})
+
+@login_required
+def delete_exam_mark(request, pk):
+    if not (request.user.is_exam_controller or request.user.is_faculty or request.user.is_admin):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+        
+    mark = get_object_or_404(ExamMark, pk=pk)
+    student_name = f"{mark.student.first_name} {mark.student.last_name}"
+    subject_code = mark.subject_code
+    mark.delete()
+    messages.success(request, f"Deleted {subject_code} exam mark for {student_name}.")
+    return redirect('faculty_results_manage')
 
 @login_required
 def faculty_classroom_alerts(request):

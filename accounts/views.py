@@ -106,7 +106,9 @@ def verify_email_view(request, uidb64, token):
 
 @login_required
 def dashboard_home(request):
-    if request.user.is_admin:
+    if request.user.role == 'EXAM_CONTROLLER':
+        return redirect('faculty_results_manage')
+    elif request.user.is_admin:
         return redirect('admin_dashboard')
     elif request.user.is_faculty:
         return redirect('faculty_dashboard')
@@ -201,14 +203,34 @@ def faculty_dashboard(request):
     return render(request, 'dashboard/faculty.html', context)
 
 @login_required
-def student_dashboard(request):
-    if not request.user.is_student:
+def student_dashboard(request, pk=None):
+    student_profile = None
+    all_students = None
+    
+    student_id = pk or request.GET.get('student_id')
+    roll_number = request.GET.get('roll_number') or request.GET.get('q')
+
+    if request.user.is_admin or request.user.is_exam_controller or request.user.is_faculty:
+        all_students = Student.objects.prefetch_related('department', 'user').all().order_by('roll_number')
+        if student_id:
+            student_profile = Student.objects.filter(pk=student_id).first()
+        elif roll_number:
+            student_profile = Student.objects.filter(
+                Q(roll_number__iexact=roll_number) |
+                Q(roll_number__icontains=roll_number) |
+                Q(first_name__icontains=roll_number) |
+                Q(last_name__icontains=roll_number)
+            ).first()
+            
+        if not student_profile and all_students.exists():
+            student_profile = all_students.first()
+    elif request.user.is_student:
+        try:
+            student_profile = request.user.student_profile
+        except Student.DoesNotExist:
+            student_profile = None
+    else:
         return redirect('dashboard_home')
-        
-    try:
-        student_profile = request.user.student_profile
-    except Student.DoesNotExist:
-        student_profile = None
         
     current_day = datetime.datetime.now().strftime('%A').upper()
     if current_day not in ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']:
@@ -224,10 +246,12 @@ def student_dashboard(request):
     
     context = {
         'student_profile': student_profile,
+        'all_students': all_students,
         'classroom_alerts': alerts[:5],
         'today_timetable': today_schedule,
         'current_day_name': current_day.capitalize(),
         'user': request.user,
+        'search_query': roll_number or '',
     }
     return render(request, 'dashboard/student.html', context)
 
@@ -258,7 +282,7 @@ def password_reset_confirm_view(request, uidb64, token):
 def _role_login(request, role):
     """Common login logic for a specific user role.
 
-    - ``role``: one of ``'STUDENT'``, ``'FACULTY'``, ``'ADMIN'``
+    - ``role``: one of ``'STUDENT'``, ``'FACULTY'``, ``'ADMIN'``, ``'EXAM_CONTROLLER'``
     """
     if request.user.is_authenticated:
         return redirect('dashboard_home')
@@ -269,7 +293,18 @@ def _role_login(request, role):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            if user is not None and getattr(user, f'is_{role.lower()}', False):
+            is_valid_role = False
+            if user is not None:
+                if role == 'STUDENT' and user.is_student:
+                    is_valid_role = True
+                elif role == 'FACULTY' and user.is_faculty:
+                    is_valid_role = True
+                elif role == 'ADMIN' and user.is_admin:
+                    is_valid_role = True
+                elif role == 'EXAM_CONTROLLER' and user.is_exam_controller:
+                    is_valid_role = True
+
+            if user is not None and is_valid_role:
                 login(request, user)
                 messages.info(request, f"Welcome back, {username}!")
                 return redirect('dashboard_home')
@@ -307,6 +342,15 @@ def admin_login_view(request):
             redirect_url += f'&next={next_url}'
         return redirect(redirect_url)
     return _role_login(request, role='ADMIN')
+
+def exam_controller_login_view(request):
+    if request.method == 'GET':
+        next_url = request.GET.get('next', '')
+        redirect_url = '/accounts/login/?role=exam_controller'
+        if next_url:
+            redirect_url += f'&next={next_url}'
+        return redirect(redirect_url)
+    return _role_login(request, role='EXAM_CONTROLLER')
 
 # Admin can reset password for any user (student or faculty)
 def admin_change_user_password(request, user_id):

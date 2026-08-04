@@ -16,7 +16,30 @@
     </div>
 </div>
 
+{% if all_students %}
+<div class="mb-4 p-3 rounded shadow-sm d-print-none" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+    <div class="row align-items-center g-3">
+        <div class="col-md-7">
+            <label class="form-label text-muted small fw-bold text-uppercase mb-1"><i class="fa-solid fa-users text-primary me-1"></i> Select Student Admit Card</label>
+            <select class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" onchange="location.href='?student_id=' + this.value;">
+                {% for st in all_students %}
+                <option value="{{ st.id }}" {% if student_profile.id == st.id %}selected{% endif %}>
+                    {{ st.roll_number }} - {{ st.first_name }} {{ st.last_name }} ({{ st.department.name|default:"General" }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-5 text-md-end">
+            <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-30 px-3 py-2">
+                <i class="fa-solid fa-user-shield me-1"></i> Admin / Exam Controller Mode
+            </span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="container-fluid px-0">
+    {% if admit_card_published %}
     <div class="admit-card-container mx-auto p-4 rounded shadow-lg" style="max-width: 850px; background: var(--sidebar-bg); border: 2px solid var(--border-color); color: var(--text-primary);">
         
         <!-- HEADER BANNER -->
@@ -139,6 +162,22 @@
         </div>
 
     </div>
+    {% else %}
+    <div class="table-card p-5 text-center my-4" style="background: linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(30,27,75,0.4) 100%); border: 1.5px solid rgba(239,68,68,0.3); border-radius: 16px; max-width: 850px; margin: 0 auto;">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3" style="background: rgba(239,68,68,0.15); width: 80px; height: 80px;">
+            <i class="fa-solid fa-id-card-clip fa-3x text-danger"></i>
+        </div>
+        <h2 class="text-white fw-bold mb-2">Admit Card Not Released Yet</h2>
+        <p class="text-muted fs-6 mx-auto mb-4" style="max-width: 600px;">
+            Examination Hall Tickets / Admit Cards for your department have not been released by the Exam Controller office yet.
+        </p>
+        <div>
+            <span class="badge bg-danger bg-opacity-20 text-danger px-3 py-2 border border-danger border-opacity-30 fs-6">
+                <i class="fa-solid fa-ban me-1"></i> Release Status: Pending Exam Controller Approval
+            </span>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <style>

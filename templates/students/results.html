@@ -1,113 +1,416 @@
 {% extends 'base.html' %}
 
-{% block title %}Smart College ERP | Semester Results{% endblock %}
+{% block title %}Smart College ERP | Examination Module & Grade Sheet{% endblock %}
 {% block active_results %}active{% endblock %}
 
+{% block extra_css %}
+<style>
+    .metric-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .gpa-pill {
+        font-weight: 800;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+    }
+    .grade-badge-O { background: rgba(16, 185, 129, 0.2) !important; color: #34d399 !important; border: 1.5px solid rgba(16, 185, 129, 0.45) !important; }
+    .grade-badge-APlus { background: rgba(14, 165, 233, 0.2) !important; color: #38bdf8 !important; border: 1.5px solid rgba(14, 165, 233, 0.45) !important; }
+    .grade-badge-A { background: rgba(99, 102, 241, 0.2) !important; color: #818cf8 !important; border: 1.5px solid rgba(99, 102, 241, 0.45) !important; }
+    .grade-badge-BPlus { background: rgba(245, 158, 11, 0.2) !important; color: #fbbf24 !important; border: 1.5px solid rgba(245, 158, 11, 0.45) !important; }
+    .grade-badge-B { background: rgba(234, 179, 8, 0.2) !important; color: #facc15 !important; border: 1.5px solid rgba(234, 179, 8, 0.45) !important; }
+    .grade-badge-C { background: rgba(168, 85, 247, 0.2) !important; color: #c084fc !important; border: 1.5px solid rgba(168, 85, 247, 0.45) !important; }
+    .grade-badge-F { background: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; border: 1.5px solid rgba(239, 68, 68, 0.45) !important; }
+
+    .sem-header {
+        background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(14,165,233,0.04) 100%);
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 24px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    /* Unique Semester Pill Colors */
+    .sem-pill-btn {
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1.5px solid transparent !important;
+        font-size: 0.9rem;
+    }
+    
+    /* Sem 1 - Indigo / Violet */
+    .sem-pill-1 { background: rgba(99, 102, 241, 0.15) !important; color: #a5b4fc !important; border-color: rgba(99, 102, 241, 0.35) !important; }
+    .sem-pill-1 .sem-badge { background: rgba(99, 102, 241, 0.25); color: #c7d2fe; }
+    .sem-pill-1.active, .sem-pill-1:hover { background: linear-gradient(135deg, #6366f1, #4f46e5) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45); }
+    .sem-pill-1.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 2 - Teal / Emerald */
+    .sem-pill-2 { background: rgba(16, 185, 129, 0.15) !important; color: #6ee7b7 !important; border-color: rgba(16, 185, 129, 0.35) !important; }
+    .sem-pill-2 .sem-badge { background: rgba(16, 185, 129, 0.25); color: #a7f3d0; }
+    .sem-pill-2.active, .sem-pill-2:hover { background: linear-gradient(135deg, #10b981, #059669) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45); }
+    .sem-pill-2.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 3 - Cyan / Sky Blue */
+    .sem-pill-3 { background: rgba(14, 165, 233, 0.15) !important; color: #7dd3fc !important; border-color: rgba(14, 165, 233, 0.35) !important; }
+    .sem-pill-3 .sem-badge { background: rgba(14, 165, 233, 0.25); color: #bae6fd; }
+    .sem-pill-3.active, .sem-pill-3:hover { background: linear-gradient(135deg, #0ea5e9, #0284c7) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.45); }
+    .sem-pill-3.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 4 - Amber / Gold */
+    .sem-pill-4 { background: rgba(245, 158, 11, 0.15) !important; color: #fde047 !important; border-color: rgba(245, 158, 11, 0.35) !important; }
+    .sem-pill-4 .sem-badge { background: rgba(245, 158, 11, 0.25); color: #fef08a; }
+    .sem-pill-4.active, .sem-pill-4:hover { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45); }
+    .sem-pill-4.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 5 - Purple / Magenta */
+    .sem-pill-5 { background: rgba(168, 85, 247, 0.15) !important; color: #d8b4fe !important; border-color: rgba(168, 85, 247, 0.35) !important; }
+    .sem-pill-5 .sem-badge { background: rgba(168, 85, 247, 0.25); color: #f3e8ff; }
+    .sem-pill-5.active, .sem-pill-5:hover { background: linear-gradient(135deg, #a855f7, #7e22ce) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.45); }
+    .sem-pill-5.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 6 - Rose / Red */
+    .sem-pill-6 { background: rgba(244, 63, 94, 0.15) !important; color: #fda4af !important; border-color: rgba(244, 63, 94, 0.35) !important; }
+    .sem-pill-6 .sem-badge { background: rgba(244, 63, 94, 0.25); color: #fecdd3; }
+    .sem-pill-6.active, .sem-pill-6:hover { background: linear-gradient(135deg, #f43f5e, #e11d48) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45); }
+    .sem-pill-6.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 7 - Orange */
+    .sem-pill-7 { background: rgba(234, 88, 12, 0.15) !important; color: #ffedd5 !important; border-color: rgba(234, 88, 12, 0.35) !important; }
+    .sem-pill-7 .sem-badge { background: rgba(234, 88, 12, 0.25); color: #fed7aa; }
+    .sem-pill-7.active, .sem-pill-7:hover { background: linear-gradient(135deg, #ea580c, #c2410c) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.45); }
+    .sem-pill-7.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    /* Sem 8 - Royal Blue */
+    .sem-pill-8 { background: rgba(59, 130, 246, 0.15) !important; color: #93c5fd !important; border-color: rgba(59, 130, 246, 0.35) !important; }
+    .sem-pill-8 .sem-badge { background: rgba(59, 130, 246, 0.25); color: #bfdbfe; }
+    .sem-pill-8.active, .sem-pill-8:hover { background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.45); }
+    .sem-pill-8.active .sem-badge { background: rgba(255, 255, 255, 0.25); color: #ffffff; }
+
+    @media print {
+        body { background: #fff !important; color: #000 !important; }
+        .sidebar, .main-header, .btn-print, .nav-tabs, .no-print { display: none !important; }
+        .main-content { margin-left: 0 !important; padding: 0 !important; }
+        .table-card { border: 1px solid #ccc !important; box-shadow: none !important; background: #fff !important; }
+        .text-white { color: #000 !important; }
+        .text-muted { color: #555 !important; }
+        .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="view-header mb-4 d-flex justify-content-between align-items-center">
+<div class="view-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
     <div>
-        <h1>My Semester Results</h1>
-        <p class="subtitle text-muted">A summary of your academic grades, evaluation status, and attendance standing.</p>
+        <h1 class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-graduation-cap text-primary"></i> Semester Results & Grade Sheet
+        </h1>
+        <p class="subtitle text-muted m-0">Detailed breakdown of Internal Marks, Mid Semester, Final Semester, GPA, and CGPA Calculation.</p>
     </div>
-    <div>
-        <button class="btn btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Report Card</button>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary btn-print d-flex align-items-center gap-2" onclick="window.print()">
+            <i class="fa-solid fa-print"></i> Print Grade Report
+        </button>
+        <a href="{% url 'my_admit_card' %}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-id-card-clip"></i> Exam Admit Card
+        </a>
     </div>
 </div>
 
+<!-- Print Only Header -->
+<div class="print-header d-none">
+    <h2>SMART COLLEGE OF ENGINEERING & TECHNOLOGY</h2>
+    <h4>OFFICIAL ACADEMIC TRANSCRIPT & EVALUATION REPORT</h4>
+    <p>Student: {{ student_profile.first_name }} {{ student_profile.last_name }} | Roll No: {{ student_profile.roll_number }} | Department: {{ student_profile.department.name }}</p>
+</div>
+
+{% if results_published %}
+<!-- Top Metrics Dashboard Cards -->
+<div class="row g-3 mb-4">
+    <!-- CGPA Card -->
+    <div class="col-6 col-md-3">
+        <div class="metric-card h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(30,27,75,0.7) 100%); border: 1.5px solid rgba(99,102,241,0.4);">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-uppercase" style="color: #a5b4fc; font-size: 0.82rem; letter-spacing: 0.8px;">Overall CGPA</span>
+                    <i class="fa-solid fa-award fs-5" style="color: #818cf8;"></i>
+                </div>
+                <h2 class="display-6 fw-bold text-white mb-0">{{ cgpa }}</h2>
+            </div>
+            <div class="mt-2">
+                <span class="badge" style="background: rgba(99,102,241,0.25); color: #c7d2fe; border: 1px solid rgba(99,102,241,0.4); font-size: 0.75rem;">Scale: 10.0 Point</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Semester GPA Card -->
+    <div class="col-6 col-md-3">
+        <div class="metric-card h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(14,165,233,0.2) 0%, rgba(12,74,110,0.7) 100%); border: 1.5px solid rgba(14,165,233,0.4);">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-uppercase" style="color: #7dd3fc; font-size: 0.82rem; letter-spacing: 0.8px;">Semester GPA</span>
+                    <i class="fa-solid fa-chart-line fs-5" style="color: #38bdf8;"></i>
+                </div>
+                <h2 class="display-6 fw-bold text-white mb-0">{{ latest_gpa }}</h2>
+            </div>
+            <div class="mt-2">
+                <span class="badge" style="background: rgba(14,165,233,0.25); color: #bae6fd; border: 1px solid rgba(14,165,233,0.4); font-size: 0.75rem;">Latest Semester</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Credits Earned Card -->
+    <div class="col-6 col-md-3">
+        <div class="metric-card h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(6,78,59,0.7) 100%); border: 1.5px solid rgba(16,185,129,0.4);">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-uppercase" style="color: #6ee7b7; font-size: 0.82rem; letter-spacing: 0.8px;">Earned Credits</span>
+                    <i class="fa-solid fa-book-bookmark fs-5" style="color: #34d399;"></i>
+                </div>
+                <h2 class="display-6 fw-bold text-white mb-0">{{ total_credits }}</h2>
+            </div>
+            <div class="mt-2">
+                <span class="badge" style="background: rgba(16,185,129,0.25); color: #a7f3d0; border: 1px solid rgba(16,185,129,0.4); font-size: 0.75rem;">Completed Coursework</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Standing & Status Card -->
+    <div class="col-6 col-md-3">
+        <div class="metric-card h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(245,158,11,0.2) 0%, rgba(120,53,15,0.7) 100%); border: 1.5px solid rgba(245,158,11,0.4);">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-uppercase" style="color: #fde047; font-size: 0.82rem; letter-spacing: 0.8px;">Academic Standing</span>
+                    <i class="fa-solid fa-shield-halved fs-5" style="color: #fbbf24;"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-0" style="font-size: 1rem; line-height: 1.3;">{{ standing }}</h5>
+            </div>
+            <div class="mt-2">
+                <span class="badge" style="background: rgba(245,158,11,0.25); color: #fef08a; border: 1px solid rgba(245,158,11,0.4); font-size: 0.75rem;">Roll: {{ student_profile.roll_number }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Examination Marksheets -->
 <div class="row">
-    <!-- Premium Report Card Visual -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h4 text-white m-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-list-check text-indigo"></i> Semester Examination Marksheets
+            </h3>
+        </div>
+
+        <!-- Semester Filter Tabs (Semester by Semester View) -->
+        {% if semester_results %}
+        <div class="mb-4 no-print p-3 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+            <label class="form-label text-white small fw-bold text-uppercase mb-2">
+                <i class="fa-solid fa-filter text-primary me-1"></i> Select Semester Result View:
+            </label>
+            <ul class="nav nav-pills gap-2 flex-wrap" id="semesterPillsTab" role="tablist">
+                {% for sem_data in semester_results %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link sem-pill-btn sem-pill-{{ sem_data.semester }} {% if forloop.first %}active{% endif %} rounded-pill fw-bold px-3 py-2" id="sem-{{ sem_data.semester }}-tab" data-bs-toggle="pill" data-bs-target="#sem-tab-{{ sem_data.semester }}" type="button" role="tab" aria-controls="sem-tab-{{ sem_data.semester }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> Semester {{ sem_data.semester }} <span class="badge sem-badge ms-1">GPA: {{ sem_data.gpa }}</span>
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="tab-content" id="semesterPillsTabContent">
+            <!-- INDIVIDUAL SEMESTER TABS (Single Semester View) -->
+            {% for sem_data in semester_results %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="sem-tab-{{ sem_data.semester }}" role="tabpanel" aria-labelledby="sem-{{ sem_data.semester }}-tab">
+                <div class="table-card mb-4 p-0 border rounded-4 overflow-hidden" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
+                    <div class="sem-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: var(--primary-gradient);">
+                                {{ sem_data.semester }}
+                            </div>
+                            <div>
+                                <h4 class="text-white m-0 fw-bold" style="font-size: 1.1rem;">Semester {{ sem_data.semester }} Evaluation Marksheet</h4>
+                                <span class="small" style="color: #94a3b8;">Total Subjects: {{ sem_data.marks|length }} | Total Credits: {{ sem_data.total_credits }}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-end">
+                                <span class="fw-bold text-uppercase d-block" style="color: #94a3b8; font-size: 0.75rem; letter-spacing: 0.5px;">Semester GPA</span>
+                                <span class="badge fs-6 fw-bold px-3 py-2" style="background: rgba(99, 102, 241, 0.22); color: #818cf8; border: 1.5px solid rgba(99, 102, 241, 0.45);">
+                                    <i class="fa-solid fa-star me-1 text-warning"></i> {{ sem_data.gpa }} / 10.0
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-hover m-0">
+                                <thead class="table-dark" style="background: #0f172a; font-size: 0.8rem; text-uppercase: uppercase; letter-spacing: 0.5px; color: #94a3b8;">
+                                    <tr>
+                                        <th>Subject Code</th>
+                                        <th>Subject Name</th>
+                                        <th class="text-center">Credits</th>
+                                        <th class="text-center" title="Internal Assessment (Max 30 Marks)">Internal (30)</th>
+                                        <th class="text-center" title="Mid Semester Exam (Max 30 Marks)">Mid Sem (30)</th>
+                                        <th class="text-center" title="End Semester Exam (Max 40 Marks)">Final Sem (40)</th>
+                                        <th class="text-center" title="Total Marks out of 100">Total (100)</th>
+                                        <th class="text-center">Grade Point</th>
+                                        <th class="text-center">Letter Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for mark in sem_data.marks %}
+                                    <tr>
+                                        <td>
+                                            <code class="fw-bold text-primary">{{ mark.subject_code }}</code>
+                                        </td>
+                                        <td>
+                                            <strong class="text-white">{{ mark.subject_name }}</strong>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary bg-opacity-30 text-white">{{ mark.credits }}</span>
+                                        </td>
+                                        <td class="text-center fw-semibold text-info">
+                                            {{ mark.internal_marks }} <span class="font-monospace" style="font-size: 0.75rem; color: #94a3b8;">/30</span>
+                                        </td>
+                                        <td class="text-center fw-semibold text-warning">
+                                            {{ mark.mid_sem_marks }} <span class="font-monospace" style="font-size: 0.75rem; color: #94a3b8;">/30</span>
+                                        </td>
+                                        <td class="text-center fw-semibold text-primary">
+                                            {{ mark.final_sem_marks }} <span class="font-monospace" style="font-size: 0.75rem; color: #94a3b8;">/40</span>
+                                        </td>
+                                        <td class="text-center fw-bold text-white fs-6">
+                                            {{ mark.total_marks }} <span class="font-monospace" style="font-size: 0.75rem; color: #94a3b8;">/100</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="fw-bold text-emerald">{{ mark.grade_point }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if mark.letter_grade == 'O' %}
+                                                <span class="badge gpa-pill grade-badge-O">O</span>
+                                            {% elif mark.letter_grade == 'A+' %}
+                                                <span class="badge gpa-pill grade-badge-APlus">A+</span>
+                                            {% elif mark.letter_grade == 'A' %}
+                                                <span class="badge gpa-pill grade-badge-A">A</span>
+                                            {% elif mark.letter_grade == 'B+' %}
+                                                <span class="badge gpa-pill grade-badge-BPlus">B+</span>
+                                            {% elif mark.letter_grade == 'B' %}
+                                                <span class="badge gpa-pill grade-badge-B">B</span>
+                                            {% elif mark.letter_grade == 'C' %}
+                                                <span class="badge gpa-pill grade-badge-C">C</span>
+                                            {% else %}
+                                                <span class="badge gpa-pill grade-badge-F">F</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="table-card p-5 text-center text-muted">
+                <i class="fa-solid fa-folder-open fa-3x mb-3 text-secondary"></i>
+                <h4>No Examination Marks Published Yet</h4>
+                <p>Your semester evaluation marks will appear here once published by your course faculty.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Evaluation Weighting & Formula Breakdown Card -->
+<div class="row mt-2 no-print">
     <div class="col-md-6 mb-4">
-        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="min-height: 380px; position: relative; overflow: hidden; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1.5px solid rgba(99, 102, 241, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-radius: 16px;">
-            <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99,102,241,0.08); border-radius: 50%;"></div>
-            <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(14,165,233,0.05); border-radius: 50%;"></div>
-
-            <div>
-                <div class="brand d-flex align-items-center justify-content-between mb-4">
-                    <div class="d-flex align-items-center gap-2 text-white">
-                        <i class="fa-solid fa-graduation-cap" style="color: #6366f1; font-size: 1.25rem;"></i>
-                        <span style="font-size: 0.95rem; font-weight: 800; letter-spacing: 0.5px;">SMART COLLEGE ACADEMICS</span>
-                    </div>
-                    <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 0.75rem;">Official Record</span>
+        <div class="table-card p-4 h-100">
+            <h4 class="text-white mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-sliders text-indigo"></i> Evaluation Component Weighting
+            </h4>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between text-muted small mb-1">
+                    <span>Internal Marks (Continuous Evaluation)</span>
+                    <strong class="text-info">30% (Max 30)</strong>
                 </div>
-
-                <div class="d-flex gap-4 align-items-center mb-4">
-                    {% if student_profile.photo %}
-                        <img src="{{ student_profile.photo.url }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username|default:user.username }}';">
-                    {% else %}
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username|default:user.username }}" alt="Photo" class="border border-secondary" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;">
-                    {% endif %}
-
-                    <div>
-                        <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">{{ student_profile.first_name }} {{ student_profile.last_name }}</h4>
-                        <span style="font-size: 0.8rem; color: #94a3b8;">Department of {{ student_profile.department.name|default:"Unassigned" }}</span>
-                    </div>
-                </div>
-
-                <div class="mt-2" style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span style="color: #94a3b8; font-size: 0.85rem;">Roll Number:</span>
-                        <strong style="color: #fff; font-size: 0.85rem;"><code>{{ student_profile.roll_number }}</code></strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span style="color: #94a3b8; font-size: 0.85rem;">Academic Year:</span>
-                        <strong style="color: #fff; font-size: 0.85rem;">2026 / 2027</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span style="color: #94a3b8; font-size: 0.85rem;">GPA Standing:</span>
-                        <strong class="{{ gpa_class }}" style="font-size: 0.85rem;">{{ standing }}</strong>
-                    </div>
+                <div class="progress" style="height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-info" style="width: 30%;"></div>
                 </div>
             </div>
 
-            <div class="mt-4 d-flex align-items-center justify-content-between p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.06);">
-                <div>
-                    <span style="color: #94a3b8; font-size: 0.75rem; display: block; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Semester GPA</span>
-                    <h2 class="m-0 text-white" style="font-size: 2.2rem; font-weight: 800;">{{ student_profile.semester_result_gpa }} <span style="font-size: 1rem; font-weight: 500; color: #64748b;">/ 10.0</span></h2>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between text-muted small mb-1">
+                    <span>Mid Semester Examination</span>
+                    <strong class="text-warning">30% (Max 30)</strong>
                 </div>
-                <div class="text-end">
-                    <span style="color: #94a3b8; font-size: 0.75rem; display: block; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Attendance</span>
-                    <h3 class="m-0" style="font-weight: 800; color: var(--color-emerald);">{{ student_profile.attendance_percentage }}%</h3>
+                <div class="progress" style="height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-warning" style="width: 30%;"></div>
                 </div>
             </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between text-muted small mb-1">
+                    <span>Final Semester Theory & Practical</span>
+                    <strong class="text-primary">40% (Max 40)</strong>
+                </div>
+                <div class="progress" style="height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-primary" style="width: 40%;"></div>
+                </div>
+            </div>
+
+            <p class="text-muted small mt-3 mb-0" style="line-height: 1.5;">
+                <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                Total Marks = Internal Marks (30) + Mid Sem Marks (30) + Final Sem Marks (40) = 100 Marks.
+            </p>
         </div>
     </div>
 
-    <!-- Details Card -->
     <div class="col-md-6 mb-4">
-        <div class="table-card h-100 p-4">
-            <div class="card-header border-bottom pb-3 mb-3">
-                <h3 class="text-white"><i class="fa-solid fa-list-check text-indigo"></i> Continuous Evaluation Detail</h3>
+        <div class="table-card p-4 h-100">
+            <h4 class="text-white mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-calculator text-success"></i> GPA & CGPA Calculation Formulas
+            </h4>
+            <div class="p-3 rounded mb-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);">
+                <div class="text-muted small mb-1">Semester GPA Formula:</div>
+                <code class="d-block text-emerald fw-bold" style="font-size: 0.95rem;">
+                    Semester GPA = &Sigma;(Grade Point &times; Credits) / &Sigma;(Credits)
+                </code>
             </div>
-
-            <div class="mb-4">
-                <h5 class="text-white mb-2" style="font-size: 0.95rem; font-weight: 600;">Academic Status Remarks</h5>
-                <div class="p-3 rounded bg-dark border" style="border-color: rgba(255,255,255,0.08) !important;">
-                    <p class="text-white m-0" style="font-size: 0.85rem; font-family: monospace; line-height: 1.5;">
-                        {{ student_profile.assessment_status }}
-                    </p>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <h5 class="text-white mb-2" style="font-size: 0.95rem; font-weight: 600;">Attendance & Exam Eligibility</h5>
-                <div class="p-3 rounded" style="background: {% if student_profile.attendance_percentage >= 75.0 %}rgba(16, 185, 129, 0.05){% else %}rgba(239, 68, 68, 0.05){% endif %}; border: 1.5px solid {% if student_profile.attendance_percentage >= 75.0 %}rgba(16, 185, 129, 0.15){% else %}rgba(239, 68, 68, 0.15){% endif %};">
-                    <p class="m-0" style="font-size: 0.85rem; line-height: 1.5; color: {% if student_profile.attendance_percentage >= 75.0 %}var(--color-emerald){% else %}#ef4444{% endif %};">
-                        {% if student_profile.attendance_percentage >= 75.0 %}
-                            <i class="fa-solid fa-circle-check"></i> <strong>Eligible for End-Semester Exams</strong>. Your attendance ({{ student_profile.attendance_percentage }}%) is above the minimum required threshold of 75.0%.
-                        {% else %}
-                            <i class="fa-solid fa-circle-xmark"></i> <strong>Attendance Shortage Warning</strong>. Your attendance ({{ student_profile.attendance_percentage }}%) falls below the 75.0% minimum requirement. Please contact your department head or coordinator.
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <div>
-                <h5 class="text-white mb-2" style="font-size: 0.95rem; font-weight: 600;">Quick Info</h5>
-                <p class="text-muted" style="font-size: 0.85rem; line-height: 1.6;">
-                    GPA is calculated based on continuous internal evaluation marks, final examinations, and coursework assignments. If there is a dispute regarding grading or remarks, please submit an application to your department faculty advisor.
-                </p>
+            <div class="p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);">
+                <div class="text-muted small mb-1">Cumulative CGPA Formula:</div>
+                <code class="d-block text-info fw-bold" style="font-size: 0.95rem;">
+                    Overall CGPA = &Sigma; All Semesters (Grade Point &times; Credits) / &Sigma; Total Credits
+                </code>
             </div>
         </div>
     </div>
 </div>
+{% else %}
+<div class="table-card p-5 text-center my-4" style="background: linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(30,27,75,0.4) 100%); border: 1.5px solid rgba(234,179,8,0.3); border-radius: 16px;">
+    <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3" style="background: rgba(234,179,8,0.15); width: 80px; height: 80px;">
+        <i class="fa-solid fa-lock fa-3x text-warning"></i>
+    </div>
+    <h2 class="text-white fw-bold mb-2">Semester Results Pending Release</h2>
+    <p class="text-muted fs-6 mx-auto mb-4" style="max-width: 600px;">
+        The End-Semester examination results for your department and semester have not been released yet.
+    </p>
+    <div>
+        <span class="badge bg-warning bg-opacity-20 text-warning px-3 py-2 border border-warning border-opacity-30 fs-6">
+            <i class="fa-solid fa-clock me-1"></i> Status: Awaiting Official Declaration
+        </span>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

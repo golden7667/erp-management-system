@@ -72,14 +72,14 @@
 
         .login-container {
             width: 100%;
-            max-width: 520px;
+            max-width: 580px;
             padding: 24px;
         }
 
         /* Top Role Selection Cards */
         .role-selection-wrapper {
             display: flex;
-            gap: 16px;
+            gap: 10px;
             margin-bottom: 24px;
         }
 
@@ -88,7 +88,7 @@
             background: var(--card-bg);
             border: 2px solid var(--card-border);
             border-radius: 16px;
-            padding: 20px 12px;
+            padding: 14px 6px;
             text-align: center;
             position: relative;
             cursor: pointer;
@@ -97,6 +97,7 @@
             flex-direction: column;
             align-items: center;
             box-shadow: var(--shadow-custom);
+            min-width: 0;
         }
 
         .role-option-card:hover {
@@ -170,6 +171,12 @@
             --radio-active: #6366f1;
         }
 
+        .login-container[data-active-theme="exam_controller"] {
+            --primary-accent: #f59e0b;
+            --primary-glow: rgba(245, 158, 11, 0.15);
+            --radio-active: #f59e0b;
+        }
+
         /* Student Active State styling */
         .role-option-card[data-role="student"].active {
             border-color: #0ea5e9;
@@ -218,6 +225,23 @@
         }
         .role-option-card[data-role="admin"].active .radio-indicator::after {
             background: #6366f1;
+            transform: scale(1);
+        }
+
+        /* Exam Controller Active State styling */
+        .role-option-card[data-role="exam_controller"].active {
+            border-color: #f59e0b;
+            box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.15);
+        }
+        .role-option-card[data-role="exam_controller"].active .role-icon-wrapper {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+        .role-option-card[data-role="exam_controller"].active .radio-indicator {
+            border-color: #f59e0b;
+        }
+        .role-option-card[data-role="exam_controller"].active .radio-indicator::after {
+            background: #f59e0b;
             transform: scale(1);
         }
 
@@ -491,6 +515,15 @@
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
                 <span class="role-label">Admin</span>
+            </div>
+
+            <!-- Exam Controller Option -->
+            <div class="role-option-card{% if active_role == 'exam_controller' %} active{% endif %}" data-role="exam_controller" data-action="{% url 'exam_controller_login' %}" data-user="exam_controller" data-pass="password123">
+                <div class="radio-indicator"></div>
+                <div class="role-icon-wrapper">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <span class="role-label">Exam Controller</span>
             </div>
         </div>
 

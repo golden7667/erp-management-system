@@ -6,10 +6,36 @@
 {% block content %}
 <div class="view-header mb-4">
     <div>
-        <h1>Student Dashboard</h1>
-        <p class="subtitle text-muted">View your profile, ID card, and academic allocations.</p>
+        <h1>Student Dashboard {% if student_profile %} - {{ student_profile.first_name }} {{ student_profile.last_name }} ({{ student_profile.roll_number }}){% endif %}</h1>
+        <p class="subtitle text-muted">View profile, ID card, attendance, and academic allocations.</p>
     </div>
 </div>
+
+{% if all_students %}
+<!-- ADMIN / EXAM CONTROLLER / FACULTY STUDENT VIEWER BAR -->
+<div class="card p-3 mb-4 shadow-sm" style="background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(14,22,38,0.9) 100%); border: 1.5px solid rgba(99,102,241,0.3);">
+    <div class="row align-items-center g-3">
+        <div class="col-md-6 col-lg-7">
+            <label class="form-label text-white small fw-bold text-uppercase mb-1">
+                <i class="fa-solid fa-users text-primary me-1"></i> Select Student Dashboard (Admin / Controller View)
+            </label>
+            <select class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" onchange="location.href='{% url 'student_dashboard' %}' + this.value + '/'">
+                {% for st in all_students %}
+                <option value="{{ st.id }}" {% if student_profile and student_profile.id == st.id %}selected{% endif %}>
+                    {{ st.roll_number }} - {{ st.first_name }} {{ st.last_name }} ({{ st.department.name|default:"General" }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6 col-lg-5">
+            <form method="get" action="{% url 'student_dashboard' %}" class="d-flex gap-2">
+                <input type="text" name="roll_number" value="{{ search_query }}" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" placeholder="Search by ERP ID / Roll No..." required>
+                <button type="submit" class="btn btn-primary px-3 fw-bold text-nowrap"><i class="fa-solid fa-search me-1"></i> Find ERP ID</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <div class="row">
     <div class="col-md-6 mb-4">
@@ -71,8 +97,7 @@
         <div class="table-card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3><i class="fa-solid fa-id-card"></i> Student ID Card</h3>
-                <div class="d-flex gap-2">
-                    <a href="{% url 'my_admit_card' %}" class="btn btn-outline-warning btn-sm" style="font-size: 0.78rem;"><i class="fa-solid fa-id-card-clip me-1"></i> Hall Ticket</a>
+                <div>
                     <a href="{% url 'student_id_card' student_profile.pk %}" class="btn btn-outline btn-sm" style="font-size: 0.78rem;"><i class="fa-solid fa-print me-1"></i> ID Card</a>
                 </div>
             </div>
@@ -145,7 +170,7 @@
 <!-- New Row: Academic & Financial Metrics -->
 <div class="row mt-4">
     <!-- Attendance Card -->
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-md-6 col-lg-4 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
                 <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-calendar-check" style="color: var(--color-emerald);"></i> ATTENDANCE</span>
@@ -168,7 +193,7 @@
     </div>
 
     <!-- GPA Card -->
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-md-6 col-lg-4 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
                 <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-chart-bar" style="color: var(--color-blue);"></i> SEMESTER RESULT</span>
@@ -184,8 +209,25 @@
         </div>
     </div>
 
+    <!-- Exam Admit Card Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md); border: 1.5px solid rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(14, 22, 38, 0.9) 100%);">
+            <div class="brand d-flex align-items-center justify-content-between">
+                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-id-card-clip" style="color: #f59e0b;"></i> EXAM ADMIT CARD</span>
+                <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30" style="font-size: 0.75rem;">August 2026</span>
+            </div>
+            <div class="my-3">
+                <h4 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: #fbbf24;">Exam Hall Ticket</h4>
+                <p class="text-muted" style="font-size: 0.8rem; margin: 4px 0 0 0;">End-Semester Theory Examinations</p>
+            </div>
+            <a href="{% url 'my_admit_card' %}?student_id={{ student_profile.id }}" class="btn btn-warning btn-sm w-100 fw-bold text-dark shadow-sm">
+                <i class="fa-solid fa-print me-1"></i> View & Print Admit Card
+            </a>
+        </div>
+    </div>
+
     <!-- Fees Card -->
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-md-6 col-lg-6 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
                 <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-credit-card" style="color: var(--color-violet);"></i> SEMESTER FEE</span>
@@ -212,7 +254,7 @@
     </div>
 
     <!-- Assessment Card -->
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-md-6 col-lg-6 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
                 <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--color-amber);"></i> ASSESSMENTS</span>
