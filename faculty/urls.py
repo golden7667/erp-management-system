@@ -19,4 +19,5 @@ urlpatterns = [
     path('examination/delete/<int:pk>/', views.delete_exam_mark, name='delete_exam_mark'),
     path('alerts/', views.faculty_classroom_alerts, name='faculty_classroom_alerts'),
     path('timetable/', views.faculty_timetable, name='faculty_timetable'),
+    path('exam-forms/', views.faculty_exam_forms_manage, name='faculty_exam_forms_manage'),
 ]

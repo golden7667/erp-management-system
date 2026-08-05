@@ -79,6 +79,18 @@
                             {% endif %}
                         </li>
 
+                        {% if user.is_authenticated and user.is_student %}
+                            <li class="{% block active_exam_form %}{% endblock %}">
+                                <a href="{% url 'student_exam_form' %}" data-title="Exam Form Fill-up"><i class="fa-solid fa-file-signature text-warning"></i> <span>Exam Form Fill-up</span></a>
+                            </li>
+                        {% endif %}
+
+                        {% if user.is_authenticated and not user.is_student %}
+                            <li class="{% block active_exam_forms_manage %}{% endblock %}">
+                                <a href="{% url 'faculty_exam_forms_manage' %}" data-title="Exam Submissions"><i class="fa-solid fa-file-signature text-info"></i> <span>Exam Submissions</span></a>
+                            </li>
+                        {% endif %}
+
                         {% if user.is_authenticated and user.is_faculty %}
                             <li class="{% block active_attendance %}{% endblock %}">
                                 <a href="{% url 'faculty_attendance_manage' %}" data-title="Manage Attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Manage Attendance</span></a>

@@ -56,6 +56,9 @@
         <p class="subtitle text-muted m-0">Input and update Internal Marks, Mid Semester, Final Semester, and manage calculated GPA & CGPA for students.</p>
     </div>
     <div class="d-flex gap-2">
+        <a href="{% url 'faculty_exam_forms_manage' %}" class="btn btn-outline-info d-flex align-items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-file-signature"></i> Exam Form Submissions
+        </a>
         {% if request.user.is_exam_controller or request.user.is_admin %}
         <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#editExamInfoModal">
             <i class="fa-solid fa-gear"></i> Exam Settings

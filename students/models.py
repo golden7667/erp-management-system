@@ -194,4 +194,38 @@ class ExamPublishControl(models.Model):
         return f"Exam Control - {dept_str} (Sem {self.semester}): Results={self.results_published}, AdmitCard={self.admit_card_published}"
 
 
+class ExamFormRegistration(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Submitted - Pending Verification'),
+        ('APPROVED', 'Approved by Exam Controller'),
+        ('REJECTED', 'Rejected / Needs Revision'),
+    ]
+
+    EXAM_TYPE_CHOICES = [
+        ('REGULAR', 'Regular Semester Examination'),
+        ('BACKLOG', 'Backlog / Re-appear Examination'),
+        ('SPECIAL', 'Special / Supplementary Examination'),
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='exam_form_registrations')
+    academic_session = models.CharField(max_length=30, default='2026-2027')
+    semester = models.IntegerField(default=1)
+    exam_type = models.CharField(max_length=20, choices=EXAM_TYPE_CHOICES, default='REGULAR')
+    subjects_list = models.TextField(help_text="Comma-separated subject codes/names")
+    fee_paid = models.BooleanField(default=True, help_text="Exam Registration Fee Status")
+    amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=1200.00)
+    transaction_id = models.CharField(max_length=50, blank=True, default='TXN-ERP-202608')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='APPROVED')
+    remarks = models.TextField(blank=True, default='')
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"Exam Form #{self.id} - {self.student.roll_number} (Sem {self.semester}) [{self.get_status_display()}]"
+
+
+
 

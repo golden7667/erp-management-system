@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart College ERP | Examination Registration Form Fill-Up{% endblock %}
+
+{% block content %}
+<div class="view-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h1 class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-file-signature text-primary"></i> Examination Registration Form (Form Fill-up)
+        </h1>
+        <p class="subtitle text-muted m-0">Submit your semester examination application, verify subjects, and download your official hall ticket.</p>
+    </div>
+    <div>
+        <a href="{% url 'my_admit_card' %}" class="btn btn-outline-warning d-flex align-items-center gap-2 shadow-sm" style="border-color: #f59e0b; color: #fbbf24;">
+            <i class="fa-solid fa-id-card-clip"></i> View Hall Ticket / Admit Card
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Form Fill-Up Section -->
+    <div class="col-lg-7">
+        <div class="table-card p-4 h-100">
+            <div class="card-header bg-transparent border-bottom px-0 pt-0 pb-3 mb-4 d-flex align-items-center justify-content-between">
+                <h3 class="m-0 text-white font-size-18"><i class="fa-solid fa-pen-to-square text-primary me-2"></i> Application Details</h3>
+                <span class="badge bg-primary bg-opacity-20 text-primary px-3 py-2">Session: 2026-2027</span>
+            </div>
+
+            <!-- Student Profile Summary Card -->
+            <div class="p-3 mb-4 rounded-3 border" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.08) !important;">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        {% if student_profile.photo %}
+                            <img src="{{ student_profile.photo.url }}" class="rounded-circle border" style="width: 55px; height: 55px; object-fit: cover;" alt="Photo">
+                        {% else %}
+                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.user.username }}" class="rounded-circle border" style="width: 55px; height: 55px; object-fit: cover;" alt="Photo">
+                        {% endif %}
+                    </div>
+                    <div class="col">
+                        <strong class="text-white d-block font-size-16">{{ student_profile.first_name }} {{ student_profile.last_name }}</strong>
+                        <span class="text-muted small">Roll No: <code class="text-primary fw-bold">{{ student_profile.roll_number }}</code> | Dept: <strong>{{ student_profile.department.name|default:"Unassigned" }}</strong></span>
+                    </div>
+                    <div class="col-auto text-end">
+                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 px-3 py-2">
+                            Attendance: {{ student_profile.attendance_percentage }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Academic Session</label>
+                        <input type="text" name="academic_session" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="2026-2027" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Semester Choice</label>
+                        <select name="semester" class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" required>
+                            <option value="1">Semester 1 (Regular)</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5" selected>Semester 5 (Current)</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold text-uppercase">Examination Application Category</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="exam_type" id="typeRegular" value="REGULAR" checked>
+                            <label class="form-check-label text-white fw-bold" for="typeRegular">
+                                Regular Examination
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="exam_type" id="typeBacklog" value="BACKLOG">
+                            <label class="form-check-label text-white fw-bold" for="typeBacklog">
+                                Backlog / Re-appear
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="exam_type" id="typeSpecial" value="SPECIAL">
+                            <label class="form-check-label text-white fw-bold" for="typeSpecial">
+                                Special / Improvement
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold text-uppercase d-block">Select Enrolled Examination Subjects</label>
+                    <div class="p-3 rounded border" style="background: var(--bg-tertiary); border-color: var(--border-color) !important;">
+                        {% for sub in default_subjects %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="subjects" value="{{ sub }}" id="sub{{ forloop.counter }}" checked>
+                            <label class="form-check-label text-white" for="sub{{ forloop.counter }}">
+                                {{ sub }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold text-uppercase">Additional Elective / Backlog Subjects (Optional)</label>
+                    <input type="text" name="custom_subjects" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" placeholder="e.g. CS-402: Microprocessors (Backlog)">
+                </div>
+
+                <!-- Fee Details Section -->
+                <div class="p-3 mb-4 rounded-3 border" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3) !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-uppercase small fw-bold d-block" style="color: #34d399;">Examination Registration Fee</span>
+                            <strong class="text-white font-size-18">₹ 1,200.00</strong>
+                            <span class="badge bg-success text-white ms-2">PAID (Online ERP Portal)</span>
+                        </div>
+                        <i class="fa-solid fa-circle-check text-emerald fa-2x"></i>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="declarationCheck" required checked>
+                    <label class="form-check-label text-muted small" for="declarationCheck">
+                        I hereby declare that all information furnished in this examination form is true and correct to the best of my knowledge. I fulfill all attendance eligibility criteria required by the Controller of Examinations.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Examination Form & Issue Hall Ticket
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Side: Submission History & Status -->
+    <div class="col-lg-5">
+        <div class="table-card p-4 h-100">
+            <div class="card-header bg-transparent border-bottom px-0 pt-0 pb-3 mb-4 d-flex align-items-center justify-content-between">
+                <h3 class="m-0 text-white font-size-18"><i class="fa-solid fa-clock-history text-info me-2"></i> Registration Status</h3>
+                <span class="badge bg-info bg-opacity-20 text-info">{{ existing_forms|length }} Submitted Forms</span>
+            </div>
+
+            {% if existing_forms %}
+                <div class="d-flex flex-column gap-3">
+                    {% for form_rec in existing_forms %}
+                    <div class="p-3 rounded-3 border" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.1) !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-secondary text-white">Form #{{ form_rec.id }}</span>
+                            {% if form_rec.status == 'APPROVED' %}
+                                <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 px-3 py-1">
+                                    <i class="fa-solid fa-circle-check me-1"></i> APPROVED & VERIFIED
+                                </span>
+                            {% elif form_rec.status == 'PENDING' %}
+                                <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30 px-3 py-1">
+                                    <i class="fa-solid fa-clock me-1"></i> PENDING VERIFICATION
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-30 px-3 py-1">
+                                    <i class="fa-solid fa-circle-xmark me-1"></i> REJECTED
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="text-white fw-bold mb-1">Semester {{ form_rec.semester }} ({{ form_rec.get_exam_type_display }})</h5>
+                        <p class="text-muted small mb-2"><i class="fa-solid fa-calendar me-1"></i> Submitted: {{ form_rec.submitted_at|date:"M d, Y - h:i A" }}</p>
+                        
+                        <div class="p-2 mb-2 rounded small" style="background: var(--bg-tertiary); color: #cbd5e1;">
+                            <strong>Registered Subjects:</strong><br>
+                            {{ form_rec.subjects_list }}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: rgba(255,255,255,0.08) !important;">
+                            <span class="text-muted small">Transaction ID: <code>{{ form_rec.transaction_id }}</code></span>
+                            {% if form_rec.status == 'APPROVED' %}
+                            <a href="{% url 'my_admit_card' %}" class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-print me-1"></i> Print Hall Ticket</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-file-signature text-secondary fa-3x mb-3 opacity-50"></i>
+                    <h5>No Examination Forms Submitted Yet</h5>
+                    <p class="small">Fill out the examination form on the left to register for the upcoming End-Semester Theory & Practical Examinations.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

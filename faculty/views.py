@@ -499,3 +499,38 @@ def faculty_classroom_alerts(request):
 def faculty_timetable(request):
     return redirect('timetable_view')
 
+from students.models import ExamFormRegistration
+
+@login_required
+def faculty_exam_forms_manage(request):
+    if not (request.user.is_exam_controller or request.user.is_faculty or request.user.is_admin):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+
+    exam_forms = ExamFormRegistration.objects.select_related('student', 'student__department').all().order_by('-submitted_at')
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+        form_id = request.POST.get('form_id')
+        exam_form = get_object_or_404(ExamFormRegistration, pk=form_id)
+
+        if action == 'approve':
+            exam_form.status = 'APPROVED'
+            exam_form.save()
+            messages.success(request, f"Approved Examination Form #{exam_form.id} for student {exam_form.student.roll_number} ({exam_form.student.first_name})!")
+        elif action == 'reject':
+            exam_form.status = 'REJECTED'
+            exam_form.remarks = request.POST.get('remarks', 'Rejected by Examination Controller.')
+            exam_form.save()
+            messages.warning(request, f"Rejected Examination Form #{exam_form.id} for student {exam_form.student.roll_number}.")
+        elif action == 'delete':
+            exam_form.delete()
+            messages.success(request, f"Deleted Examination Form record #{form_id}.")
+
+        return redirect('faculty_exam_forms_manage')
+
+    return render(request, 'faculty/exam_forms_manage.html', {
+        'exam_forms': exam_forms
+    })
+
+

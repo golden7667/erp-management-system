@@ -15,4 +15,5 @@ urlpatterns = [
     path('timetable/', views.student_timetable, name='student_timetable'),
     path('admit-card/', views.student_admit_card, name='my_admit_card'),
     path('admit-card/<int:pk>/', views.student_admit_card, name='student_admit_card'),
+    path('exam-form/', views.student_exam_form, name='student_exam_form'),
 ]

@@ -287,3 +287,65 @@ def student_admit_card(request, pk=None):
         'control': control,
     })
 
+from .models import ExamFormRegistration
+
+@login_required
+def student_exam_form(request):
+    if not request.user.is_student:
+        messages.error(request, "Permission denied. Only students can access the Examination Registration Form.")
+        return redirect('dashboard_home')
+
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        messages.error(request, "No student profile found for your account.")
+        return redirect('dashboard_home')
+
+    existing_forms = ExamFormRegistration.objects.filter(student=student)
+    latest_form = existing_forms.first()
+
+    default_subjects = [
+        "CS-501: Data Structures & Algorithms",
+        "CS-502: Database Management Systems",
+        "CS-503: Computer Networks & Security",
+        "CS-504: Software Engineering & Agile",
+        "CS-505: Web Technologies & Frameworks"
+    ]
+
+    if request.method == 'POST':
+        semester = request.POST.get('semester', 1)
+        exam_type = request.POST.get('exam_type', 'REGULAR')
+        academic_session = request.POST.get('academic_session', '2026-2027')
+        selected_subjects = request.POST.getlist('subjects')
+        custom_subjects = request.POST.get('custom_subjects', '').strip()
+
+        all_subjects_str = ", ".join(selected_subjects)
+        if custom_subjects:
+            all_subjects_str = f"{all_subjects_str}, {custom_subjects}" if all_subjects_str else custom_subjects
+
+        if not all_subjects_str:
+            all_subjects_str = ", ".join(default_subjects)
+
+        form_entry = ExamFormRegistration.objects.create(
+            student=student,
+            semester=semester,
+            exam_type=exam_type,
+            academic_session=academic_session,
+            subjects_list=all_subjects_str,
+            fee_paid=True,
+            amount_paid=1200.00,
+            transaction_id=f"TXN-ERP-{student.roll_number}-2026",
+            status='APPROVED',
+        )
+
+        messages.success(request, f"Examination Registration Form #{form_entry.id} submitted successfully! Your Admit Card is now available for download.")
+        return redirect('student_exam_form')
+
+    return render(request, 'students/exam_form.html', {
+        'student_profile': student,
+        'existing_forms': existing_forms,
+        'latest_form': latest_form,
+        'default_subjects': default_subjects,
+    })
+
+
