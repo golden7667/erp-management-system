@@ -272,6 +272,7 @@
 </div>
 {% endif %}
 
+{% if control.marks_entry_open or request.user.is_exam_controller or request.user.is_admin %}
 <!-- Department & Semester & Student Filter Bar -->
 <div class="filter-card mb-4">
     <form method="get" class="row g-3 align-items-end">
@@ -746,6 +747,21 @@
         </div>
     </div>
 </div>
+{% else %}
+<!-- FULL DISPLAY LOCKED CARD WHEN MARKS ENTRY IS HELD FOR REGULAR FACULTY -->
+<div class="table-card p-5 text-center my-4 rounded-4 shadow-lg" style="background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(15,23,42,0.95) 100%); border: 2px solid rgba(245, 158, 11, 0.45) !important;">
+    <div class="mb-3">
+        <i class="fa-solid fa-lock fa-5x" style="color: #fbbf24;"></i>
+    </div>
+    <h2 class="text-white fw-bold mb-2">Faculty Marks Entry & Updates Currently Locked</h2>
+    <p class="mb-4" style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.6; max-width: 580px; margin-left: auto; margin-right: auto;">
+        The Controller of Examinations has currently locked and held the exam marks submission portal. Regular faculty members cannot view, enter, or modify student examination marks at this time.
+    </p>
+    <span class="badge px-4 py-2 fs-6" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45); font-weight: 700;">
+        <i class="fa-solid fa-user-lock me-1"></i> Access Status: Locked by Exam Controller
+    </span>
+</div>
+{% endif %}
 
 <!-- ADD EXAM MARK MODAL -->
 <div class="modal fade" id="addMarkModal" tabindex="-1" aria-labelledby="addMarkModalLabel" aria-hidden="true">
