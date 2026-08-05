@@ -609,13 +609,17 @@
                                                             <input type="hidden" name="student" value="{{ mark.student.id }}">
                                                         </div>
 
-                                                        <div class="row g-2 mb-3">
+                                                         <div class="row g-2 mb-3">
                                                             <div class="col-6">
-                                                                <label class="form-label text-muted small">Semester</label>
-                                                                <input type="number" name="semester" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="{{ mark.semester }}" min="1" max="8" required>
+                                                                <label class="form-label text-white small fw-bold"><i class="fa-solid fa-graduation-cap text-primary me-1"></i> Target Semester</label>
+                                                                <select name="semester" class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" required>
+                                                                    {% for s in "12345678" %}
+                                                                    <option value="{{ s }}" {% if mark.semester|slugify == s %}selected{% endif %}>Semester {{ s }}</option>
+                                                                    {% endfor %}
+                                                                </select>
                                                             </div>
                                                             <div class="col-6">
-                                                                <label class="form-label text-muted small">Credits</label>
+                                                                <label class="form-label text-white small fw-bold">Credits</label>
                                                                 <input type="number" name="credits" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="{{ mark.credits }}" min="1" max="6" required>
                                                             </div>
                                                         </div>
@@ -789,11 +793,20 @@
 
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label text-muted small fw-bold">Semester</label>
-                            <input type="number" name="semester" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="1" min="1" max="8" required>
+                            <label class="form-label text-white small fw-bold"><i class="fa-solid fa-graduation-cap text-primary me-1"></i> Target Semester</label>
+                            <select name="semester" class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" required>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5" selected>Semester 5 (Current)</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-muted small fw-bold">Credits</label>
+                            <label class="form-label text-white small fw-bold">Credits</label>
                             <input type="number" name="credits" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="4" min="1" max="6" required>
                         </div>
                     </div>
