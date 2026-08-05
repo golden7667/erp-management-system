@@ -104,8 +104,8 @@
                 {% else %}
                     <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.roll_number }}" alt="Candidate Photo" class="rounded-3 border mb-2 shadow" style="width: 105px; height: 120px; object-fit: cover; border-color: var(--primary-color) !important;">
                 {% endif %}
-                <div class="barcode-box bg-white p-1 rounded-2">
-                    <svg id="admit-barcode" data-barcode-val="{{ student_profile.roll_number }}" style="width: 100%; max-height: 34px;"></svg>
+                <div class="barcode-box bg-white p-2 rounded-2 shadow-sm d-flex align-items-center justify-content-center overflow-hidden" style="width: 105px; height: 38px; margin: 0 auto;">
+                    <svg id="admit-barcode" data-barcode-val="{{ student_profile.roll_number }}" style="max-width: 100%; height: auto; max-height: 32px; display: block;"></svg>
                 </div>
             </div>
         </div>
@@ -237,12 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             JsBarcode("#admit-barcode", val, {
                 format: "CODE128",
-                width: 1.4,
-                height: 30,
+                width: 1.0,
+                height: 28,
                 displayValue: false,
                 background: "#ffffff",
                 lineColor: "#000000",
-                margin: 0
+                margin: 2
             });
         } catch (e) {
             console.log("Barcode error:", e);
