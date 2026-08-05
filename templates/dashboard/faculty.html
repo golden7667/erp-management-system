@@ -229,6 +229,7 @@
                     <th>Student Name</th>
                     <th>Roll Number</th>
                     <th>Email Address</th>
+                    <th><i class="fa-solid fa-phone me-1" style="color: #38bdf8;"></i> Phone Number</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -245,18 +246,60 @@
                     <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
                     <td><code>{{ student.roll_number }}</code></td>
                     <td>{{ student.user.email }}</td>
+                    <td>
+                        {% if student.phone_number %}
+                            <span class="badge px-2 py-1" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 0.82rem; font-weight: 700;">
+                                <i class="fa-solid fa-phone me-1"></i> {{ student.phone_number }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted small">Not Provided</span>
+                        {% endif %}
+                    </td>
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#editPhoneModal{{ student.pk }}" style="border-color: #38bdf8; color: #38bdf8; font-weight: 600;">
+                                <i class="fa-solid fa-phone me-1"></i> Update Phone
+                            </button>
                             <a href="{% url 'student_id_card' student.pk %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-id-card me-1"></i> ID Card</a>
                             <a href="{% url 'my_admit_card' %}?student_id={{ student.pk }}" class="btn btn-outline-warning btn-sm" style="border-color: #f59e0b; color: #fbbf24;"><i class="fa-solid fa-id-card-clip me-1"></i> Admit Card</a>
+                        </div>
+
+                        <!-- UPDATE PHONE MODAL FOR THIS STUDENT -->
+                        <div class="modal fade text-start" id="editPhoneModal{{ student.pk }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+                                    <div class="modal-header border-bottom" style="border-color: var(--border-color) !important;">
+                                        <h5 class="modal-title text-white">
+                                            <i class="fa-solid fa-phone me-2" style="color: #38bdf8;"></i> Update Phone Number: {{ student.first_name }} {{ student.last_name }}
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="post" action="{% url 'update_student_phone' student.pk %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label text-muted small">Student Roll Number & Department</label>
+                                                <input type="text" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="{{ student.roll_number }} - {{ student.department.name|default:'General' }}" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label text-white small fw-bold"><i class="fa-solid fa-mobile-screen me-1" style="color: #34d399;"></i> Mobile / Contact Phone Number</label>
+                                                <input type="text" name="phone_number" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" value="{{ student.phone_number|default:'' }}" placeholder="e.g. +91 9876543210" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-top" style="border-color: var(--border-color) !important;">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn fw-bold text-white" style="background: #10b981; border-color: #10b981;"><i class="fa-solid fa-floppy-disk me-1"></i> Save Phone Number</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-muted text-center">No students registered in your department yet.</td>
+                    <td colspan="6" class="text-muted text-center">No students registered in your department yet.</td>
                 </tr>
-
                 {% endfor %}
             </tbody>
         </table>

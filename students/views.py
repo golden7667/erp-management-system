@@ -352,3 +352,19 @@ def student_exam_form(request):
         'default_subjects': default_subjects,
         'control': control,
     })
+
+@login_required
+def update_student_phone(request, pk):
+    if not (request.user.is_admin or request.user.is_faculty or request.user.is_exam_controller):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard_home')
+
+    student = get_object_or_404(Student, pk=pk)
+    if request.method == 'POST':
+        phone = request.POST.get('phone_number', '').strip()
+        student.phone_number = phone
+        student.save()
+        messages.success(request, f"Successfully updated contact phone number for {student.first_name} {student.last_name} ({student.roll_number}) to '{phone}'!")
+
+    next_url = request.META.get('HTTP_REFERER') or 'dashboard_home'
+    return redirect(next_url)
