@@ -211,21 +211,36 @@
             </h3>
         </div>
 
-        <!-- Semester Filter Tabs (Semester by Semester View) -->
+        <!-- Semester Filter Tabs & Live Subject Search Bar -->
         {% if semester_results %}
         <div class="mb-4 no-print p-3 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
-            <label class="form-label text-white small fw-bold text-uppercase mb-2">
-                <i class="fa-solid fa-filter text-primary me-1"></i> Select Semester Result View:
-            </label>
-            <ul class="nav nav-pills gap-2 flex-wrap" id="semesterPillsTab" role="tablist">
-                {% for sem_data in semester_results %}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link sem-pill-btn sem-pill-{{ sem_data.semester }} {% if forloop.first %}active{% endif %} rounded-pill fw-bold px-3 py-2" id="sem-{{ sem_data.semester }}-tab" data-bs-toggle="pill" data-bs-target="#sem-tab-{{ sem_data.semester }}" type="button" role="tab" aria-controls="sem-tab-{{ sem_data.semester }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                        <i class="fa-solid fa-graduation-cap me-1"></i> Semester {{ sem_data.semester }} <span class="badge sem-badge ms-1">GPA: {{ sem_data.gpa }}</span>
-                    </button>
-                </li>
-                {% endfor %}
-            </ul>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-7">
+                    <label class="form-label text-white small fw-bold text-uppercase mb-2 d-block">
+                        <i class="fa-solid fa-filter text-primary me-1"></i> Select Semester Result View:
+                    </label>
+                    <ul class="nav nav-pills gap-2 flex-wrap" id="semesterPillsTab" role="tablist">
+                        {% for sem_data in semester_results %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link sem-pill-btn sem-pill-{{ sem_data.semester }} {% if forloop.first %}active{% endif %} rounded-pill fw-bold px-3 py-2" id="sem-{{ sem_data.semester }}-tab" data-bs-toggle="pill" data-bs-target="#sem-tab-{{ sem_data.semester }}" type="button" role="tab" aria-controls="sem-tab-{{ sem_data.semester }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                <i class="fa-solid fa-graduation-cap me-1"></i> Semester {{ sem_data.semester }} <span class="badge sem-badge ms-1">GPA: {{ sem_data.gpa }}</span>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-white small fw-bold text-uppercase mb-2 d-block">
+                        <i class="fa-solid fa-magnifying-glass text-info me-1"></i> Search Subject / Code:
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text border-end-0" style="background: var(--bg-tertiary); color: #38bdf8; border-color: var(--border-color);">
+                            <i class="fa-solid fa-search"></i>
+                        </span>
+                        <input type="text" id="subjectSearchInput" class="form-control border-start-0" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" placeholder="Type subject name or code (e.g. CS-101)..." onkeyup="filterSubjects()">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="tab-content" id="semesterPillsTabContent">
@@ -413,4 +428,24 @@
     </div>
 </div>
 {% endif %}
+
+<script>
+function filterSubjects() {
+    var input = document.getElementById("subjectSearchInput");
+    var filter = input ? input.value.toLowerCase().trim() : "";
+    var tables = document.querySelectorAll("#semesterPillsTabContent table");
+    
+    tables.forEach(function(table) {
+        var trs = table.querySelectorAll("tbody tr");
+        trs.forEach(function(tr) {
+            var text = tr.textContent.toLowerCase();
+            if (!filter || text.indexOf(filter) > -1) {
+                tr.style.display = "";
+            } else {
+                tr.style.display = "none";
+            }
+        });
+    });
+}
+</script>
 {% endblock %}
