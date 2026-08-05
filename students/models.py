@@ -167,6 +167,7 @@ class ExamPublishControl(models.Model):
     results_published = models.BooleanField(default=True, help_text="Publish Semester Results to Students")
     admit_card_published = models.BooleanField(default=True, help_text="Release Exam Admit Cards to Students")
     exam_form_open = models.BooleanField(default=True, help_text="Open Examination Application Form Fill-Up to Students")
+    marks_entry_open = models.BooleanField(default=True, help_text="Open Faculty Exam Marks Entry & Update Portal")
     exam_name = models.CharField(max_length=150, default="End-Semester Theory Examinations - August 2026")
     academic_session = models.CharField(max_length=50, default="2026-2027")
     exam_center = models.CharField(max_length=150, default="Smart College Main Campus, Examination Block-A")
@@ -184,6 +185,7 @@ class ExamPublishControl(models.Model):
                 'results_published': True,
                 'admit_card_published': True,
                 'exam_form_open': True,
+                'marks_entry_open': True,
                 'exam_name': 'End-Semester Theory Examinations - August 2026',
                 'academic_session': '2026-2027',
                 'exam_center': 'Smart College Main Campus, Examination Block-A'

@@ -71,15 +71,15 @@
 </div>
 
 {% if request.user.is_exam_controller or request.user.is_admin %}
-<!-- EXAM CONTROLLER PUBLISHING & FORM FILL-UP CONTROL CARDS -->
-<div class="row g-4 mb-4">
-    <!-- Results Publish Control -->
-    <div class="col-lg-4 col-md-6">
-        <div class="table-card p-4 h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.85) 100%); border: 1.5px solid {% if control.results_published %}rgba(16,185,129,0.45){% else %}rgba(245,158,11,0.45){% endif %};">
+<!-- EXAM CONTROLLER / ADMIN PUBLISHING CONTROLS BANNER -->
+<div class="row g-3 mb-4">
+    <!-- Semester Results Status Card -->
+    <div class="col-lg-3 col-md-6">
+        <div class="table-card p-4 h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.85) 100%); border: 1.5px solid {% if control.results_published %}rgba(16,185,129,0.45){% else %}rgba(239,68,68,0.45){% endif %};">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <span class="fw-bold text-uppercase d-block" style="color: #6ee7b7; font-size: 0.78rem; letter-spacing: 0.8px;">Controller Results</span>
-                    <h4 class="text-white fw-bold m-0"><i class="fa-solid fa-square-poll-vertical me-2 text-emerald"></i> Results Status</h4>
+                    <span class="fw-bold text-uppercase d-block" style="color: #34d399; font-size: 0.78rem; letter-spacing: 0.8px;">Controller Release</span>
+                    <h4 class="text-white fw-bold m-0"><i class="fa-solid fa-square-poll-vertical me-2 text-emerald"></i> Semester Results</h4>
                 </div>
                 <div>
                     {% if control.results_published %}
@@ -87,37 +87,37 @@
                             <i class="fa-solid fa-circle-check me-1"></i> PUBLISHED
                         </span>
                     {% else %}
-                        <span class="badge px-3 py-2 fs-6" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45);">
-                            <i class="fa-solid fa-lock me-1"></i> HELD
+                        <span class="badge px-3 py-2 fs-6" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45);">
+                            <i class="fa-solid fa-ban me-1"></i> HELD
                         </span>
                     {% endif %}
                 </div>
             </div>
             <p class="mb-3" style="color: #cbd5e1; font-size: 0.85rem;">
                 {% if control.results_published %}
-                    Students can view marksheets, GPA & CGPA calculations.
+                    Students can view GPA, marks breakdown & download marksheets.
                 {% else %}
-                    Semester marksheets are hidden from students.
+                    Semester results are currently HELD / HIDDEN from student portal.
                 {% endif %}
             </p>
             <form method="post" class="m-0">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="toggle_publish_results">
                 {% if control.results_published %}
-                    <button type="submit" class="btn btn-outline-warning btn-sm w-100 fw-bold" onclick="return confirm('Hold / unpublish semester results for students?');">
-                        <i class="fa-solid fa-eye-slash me-1"></i> Hold / Unpublish Results
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 fw-bold" onclick="return confirm('Hold / unpublish semester results for students?');">
+                        <i class="fa-solid fa-eye-slash me-1"></i> Hold / Hide Results
                     </button>
                 {% else %}
-                    <button type="submit" class="btn btn-success btn-sm w-100 fw-bold">
-                        <i class="fa-solid fa-paper-plane me-1"></i> Publish Results
+                    <button type="submit" class="btn btn-emerald text-white btn-sm w-100 fw-bold" style="background: #10b981;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Publish Results Live
                     </button>
                 {% endif %}
             </form>
         </div>
     </div>
 
-    <!-- Admit Card Publish Control -->
-    <div class="col-lg-4 col-md-6">
+    <!-- Admit Cards Release Status Card -->
+    <div class="col-lg-3 col-md-6">
         <div class="table-card p-4 h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(15,23,42,0.85) 100%); border: 1.5px solid {% if control.admit_card_published %}rgba(14,165,233,0.45){% else %}rgba(239,68,68,0.45){% endif %};">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -160,7 +160,7 @@
     </div>
 
     <!-- Exam Form Fill-Up Hold / Unhold Control Card -->
-    <div class="col-lg-4 col-md-12">
+    <div class="col-lg-3 col-md-6">
         <div class="table-card p-4 h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(15,23,42,0.85) 100%); border: 1.5px solid {% if control.exam_form_open %}rgba(245,158,11,0.45){% else %}rgba(239,68,68,0.45){% endif %};">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -170,20 +170,20 @@
                 <div>
                     {% if control.exam_form_open %}
                         <span class="badge px-3 py-2 fs-6" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45);">
-                            <i class="fa-solid fa-circle-check me-1"></i> OPEN / ACTIVE
+                            <i class="fa-solid fa-circle-check me-1"></i> OPEN
                         </span>
                     {% else %}
                         <span class="badge px-3 py-2 fs-6" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45);">
-                            <i class="fa-solid fa-lock me-1"></i> HELD / CLOSED
+                            <i class="fa-solid fa-lock me-1"></i> HELD
                         </span>
                     {% endif %}
                 </div>
             </div>
             <p class="mb-3" style="color: #cbd5e1; font-size: 0.85rem;">
                 {% if control.exam_form_open %}
-                    Students can access and submit their examination registration forms.
+                    Students can access and submit their registration forms.
                 {% else %}
-                    Form submission is currently HELD & CLOSED for all students.
+                    Form submission is currently HELD & CLOSED for students.
                 {% endif %}
             </p>
             <form method="post" class="m-0">
@@ -195,7 +195,50 @@
                     </button>
                 {% else %}
                     <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold shadow-sm" style="background: #f59e0b; border-color: #f59e0b; color: #0f172a;">
-                        <i class="fa-solid fa-lock-open me-1"></i> Open / Unhold Exam Form
+                        <i class="fa-solid fa-lock-open me-1"></i> Open / Unhold Form
+                    </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Faculty Exam Marks Entry Hold / Unhold Control Card -->
+    <div class="col-lg-3 col-md-6">
+        <div class="table-card p-4 h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(15,23,42,0.85) 100%); border: 1.5px solid {% if control.marks_entry_open %}rgba(168,85,247,0.45){% else %}rgba(239,68,68,0.45){% endif %};">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="fw-bold text-uppercase d-block" style="color: #c084fc; font-size: 0.78rem; letter-spacing: 0.8px;">Faculty Portal Control</span>
+                    <h4 class="text-white fw-bold m-0"><i class="fa-solid fa-pen-nib me-2" style="color: #c084fc;"></i> Marks Entry Access</h4>
+                </div>
+                <div>
+                    {% if control.marks_entry_open %}
+                        <span class="badge px-3 py-2 fs-6" style="background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1.5px solid rgba(168, 85, 247, 0.45);">
+                            <i class="fa-solid fa-circle-check me-1"></i> OPEN / ACTIVE
+                        </span>
+                    {% else %}
+                        <span class="badge px-3 py-2 fs-6" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45);">
+                            <i class="fa-solid fa-lock me-1"></i> HELD / LOCKED
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            <p class="mb-3" style="color: #cbd5e1; font-size: 0.85rem;">
+                {% if control.marks_entry_open %}
+                    Faculty members can enter & update student exam marks.
+                {% else %}
+                    Faculty marks entry & updates are currently HELD & LOCKED.
+                {% endif %}
+            </p>
+            <form method="post" class="m-0">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle_marks_entry">
+                {% if control.marks_entry_open %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 fw-bold" onclick="return confirm('Hold and lock faculty exam marks entry portal?');">
+                        <i class="fa-solid fa-lock me-1"></i> Hold / Lock Marks Entry
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-sm w-100 fw-bold shadow-sm" style="background: #a855f7; border-color: #a855f7; color: #ffffff;">
+                        <i class="fa-solid fa-lock-open me-1"></i> Open / Unhold Marks Entry
                     </button>
                 {% endif %}
             </form>
@@ -209,6 +252,16 @@
     <div>
         <strong class="text-white d-block">Faculty Assessment Portal</strong>
         <span class="text-muted small">You can enter and update examination marks for students in your department below. Declaration of Semester Results and Admit Cards is managed directly by the Examination Controller.</span>
+    </div>
+</div>
+{% endif %}
+
+{% if not control.marks_entry_open %}
+<div class="alert alert-warning border-0 rounded-4 p-3 mb-4 d-flex align-items-center gap-3 d-print-none" style="background: rgba(245, 158, 11, 0.18); border: 1.5px solid rgba(245, 158, 11, 0.45) !important;">
+    <i class="fa-solid fa-lock fa-2x" style="color: #fbbf24;"></i>
+    <div>
+        <strong class="text-white d-block font-size-16">Faculty Exam Marks Entry & Updates Currently HELD / LOCKED</strong>
+        <span class="small" style="color: #cbd5e1;">The Examination Controller has temporarily locked exam marks submissions. Regular faculty members cannot add or edit student marks until reopened by the Exam Controller.</span>
     </div>
 </div>
 {% endif %}

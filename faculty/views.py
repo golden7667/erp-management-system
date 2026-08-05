@@ -371,6 +371,16 @@ def faculty_results_manage(request):
             messages.success(request, f"Exam Registration Form Fill-Up status set to {st} for {selected_department.name if selected_department else 'All Departments'}.")
             return redirect(request.get_full_path())
 
+        elif action == 'toggle_marks_entry':
+            if not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Permission denied. Only Examination Controller or Admin can open/hold faculty marks entry.")
+                return redirect(request.get_full_path())
+            control.marks_entry_open = not control.marks_entry_open
+            control.save()
+            st = "OPEN / UNHOLD / ACTIVE" if control.marks_entry_open else "HELD / CLOSED / LOCKED"
+            messages.success(request, f"Faculty Exam Marks Entry Portal status set to {st} for {selected_department.name if selected_department else 'All Departments'}.")
+            return redirect(request.get_full_path())
+
         elif action == 'update_exam_info':
             if not (request.user.is_exam_controller or request.user.is_admin):
                 messages.error(request, "Permission denied. Only Examination Controller or Admin can change exam settings.")
@@ -383,6 +393,9 @@ def faculty_results_manage(request):
             return redirect(request.get_full_path())
 
         elif action == 'add_mark':
+            if not control.marks_entry_open and not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Marks Entry Portal is currently HELD / CLOSED by the Examination Controller. Marks cannot be added at this time.")
+                return redirect(request.get_full_path())
             form = ExamMarkForm(request.POST)
             if form.is_valid():
                 mark = form.save(commit=False)
@@ -398,6 +411,9 @@ def faculty_results_manage(request):
                 messages.error(request, f"Failed to add mark: {form.errors.as_text()}")
                 
         elif action == 'edit_mark':
+            if not control.marks_entry_open and not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Marks Entry Portal is currently HELD / CLOSED by the Examination Controller. Marks cannot be edited at this time.")
+                return redirect(request.get_full_path())
             mark_id = request.POST.get('mark_id')
             mark = get_object_or_404(ExamMark, pk=mark_id)
             if faculty and not (request.user.is_exam_controller or request.user.is_admin):
@@ -413,6 +429,9 @@ def faculty_results_manage(request):
                 messages.error(request, f"Failed to update mark: {form.errors.as_text()}")
                 
         elif action == 'delete_mark':
+            if not control.marks_entry_open and not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Marks Entry Portal is currently HELD / CLOSED by the Examination Controller. Marks cannot be deleted at this time.")
+                return redirect(request.get_full_path())
             mark_id = request.POST.get('mark_id')
             mark = get_object_or_404(ExamMark, pk=mark_id)
             if faculty and not (request.user.is_exam_controller or request.user.is_admin):
