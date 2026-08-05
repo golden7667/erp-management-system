@@ -7,20 +7,22 @@
     <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
         <div>
             <h1><i class="fa-solid fa-id-card-clip text-primary me-2"></i> Examination Hall Ticket</h1>
-            <p class="subtitle text-muted">Official End-Semester Exam Admit Card & Exam Schedule.</p>
+            <p class="subtitle text-muted m-0">Official End-Semester Exam Admit Card & Exam Schedule.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{% url 'dashboard_home' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i> Dashboard</a>
-            <button onclick="window.print()" class="btn btn-primary btn-sm"><i class="fa-solid fa-print me-1"></i> Print Hall Ticket</button>
+            <a href="{% url 'dashboard_home' %}" class="btn btn-outline-secondary btn-sm fw-bold"><i class="fa-solid fa-arrow-left me-1"></i> Dashboard</a>
+            <button onclick="window.print()" class="btn btn-primary btn-sm fw-bold"><i class="fa-solid fa-print me-1"></i> Print Hall Ticket</button>
         </div>
     </div>
 </div>
 
 {% if all_students %}
-<div class="mb-4 p-3 rounded shadow-sm d-print-none" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+<div class="mb-4 p-3 rounded-3 shadow-sm d-print-none" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
     <div class="row align-items-center g-3">
         <div class="col-md-7">
-            <label class="form-label text-muted small fw-bold text-uppercase mb-1"><i class="fa-solid fa-users text-primary me-1"></i> Select Student Admit Card</label>
+            <label class="form-label small fw-bold text-uppercase mb-1" style="color: #38bdf8; font-size: 0.8rem; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-users me-1" style="color: #38bdf8;"></i> Select Student Admit Card
+            </label>
             <select class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" onchange="location.href='?student_id=' + this.value;">
                 {% for st in all_students %}
                 <option value="{{ st.id }}" {% if student_profile.id == st.id %}selected{% endif %}>
@@ -30,7 +32,7 @@
             </select>
         </div>
         <div class="col-md-5 text-md-end">
-            <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-30 px-3 py-2">
+            <span class="badge px-3 py-2" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; border: 1.5px solid rgba(14, 165, 233, 0.45); font-weight: 700; font-size: 0.85rem;">
                 <i class="fa-solid fa-user-shield me-1"></i> Admin / Exam Controller Mode
             </span>
         </div>
@@ -40,27 +42,27 @@
 
 <div class="container-fluid px-0">
     {% if admit_card_published %}
-    <div class="admit-card-container mx-auto p-4 rounded shadow-lg" style="max-width: 850px; background: var(--sidebar-bg); border: 2px solid var(--border-color); color: var(--text-primary);">
+    <div class="admit-card-container mx-auto p-4 rounded-4 shadow-lg" style="max-width: 850px; background: rgba(15, 23, 42, 0.9); border: 2px solid var(--border-color); color: var(--text-primary);">
         
         <!-- HEADER BANNER -->
-        <div class="admit-header text-center pb-3 border-bottom mb-4" style="border-color: var(--border-color) !important;">
+        <div class="admit-header text-center pb-3 border-bottom mb-4" style="border-color: rgba(255,255,255,0.12) !important;">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                 <div class="d-flex align-items-center gap-2">
                     <div style="width: 44px; height: 44px; background: var(--primary-gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.4rem;">
                         <i class="fa-solid fa-graduation-cap"></i>
                     </div>
                     <div class="text-start">
-                        <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; color: #ffffff;">SMART COLLEGE OF ENGINEERING & TECHNOLOGY</h2>
-                        <span class="text-muted" style="font-size: 0.8rem;">Affiliated to State Technological University • Approved by AICTE</span>
+                        <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; color: #ffffff;">SMART COLLEGE OF ENGINEERING & TECHNOLOGY</h2>
+                        <span style="font-size: 0.8rem; color: #cbd5e1;">Affiliated to State Technological University • Approved by AICTE</span>
                     </div>
                 </div>
-                <div class="badge px-3 py-2" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); font-size: 0.82rem;">
+                <div class="badge px-3 py-2" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; border: 1.5px solid rgba(14, 165, 233, 0.45); font-size: 0.85rem; font-weight: 700;">
                     OFFICIAL ADMIT CARD
                 </div>
             </div>
             
-            <div class="py-2 px-3 rounded mt-2 text-center" style="background: var(--primary-gradient); color: #ffffff;">
-                <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            <div class="py-2 px-3 rounded-3 mt-2 text-center shadow-sm" style="background: var(--primary-gradient); color: #ffffff;">
+                <h4 style="margin: 0; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
                     {{ exam_name|default:"End-Semester Theory Examinations - August 2026" }}
                 </h4>
             </div>
@@ -70,27 +72,27 @@
         <div class="row g-3 mb-4 align-items-center">
             <div class="col-md-9 col-8">
                 <div class="table-responsive">
-                    <table class="table table-sm text-white m-0" style="font-size: 0.88rem; border-color: rgba(255,255,255,0.08);">
+                    <table class="table table-sm text-white m-0" style="font-size: 0.9rem; border-color: rgba(255,255,255,0.08);">
                         <tbody>
                             <tr>
-                                <td class="text-muted fw-semibold" style="width: 32%;">Candidate Name:</td>
-                                <td><strong style="color: #6366f1; font-size: 0.95rem;">{{ student_profile.first_name }} {{ student_profile.last_name }}</strong></td>
+                                <td style="width: 32%; color: #94a3b8; font-weight: 600;">Candidate Name:</td>
+                                <td><strong style="color: #ffffff; font-size: 1.0rem;">{{ student_profile.first_name }} {{ student_profile.last_name }}</strong></td>
                             </tr>
                             <tr>
-                                <td class="text-muted fw-semibold">Roll Number:</td>
-                                <td><code class="px-2 py-1 rounded" style="background: rgba(99,102,241,0.15); color: #818cf8; font-size: 0.9rem;">{{ student_profile.roll_number }}</code></td>
+                                <td style="color: #94a3b8; font-weight: 600;">Roll Number:</td>
+                                <td><code class="px-2 py-1 rounded fw-bold" style="background: rgba(14,165,233,0.2); color: #38bdf8; font-size: 0.95rem;">{{ student_profile.roll_number }}</code></td>
                             </tr>
                             <tr>
-                                <td class="text-muted fw-semibold">Department / Branch:</td>
-                                <td>{{ student_profile.department.name|default:"Computer Science & Engineering" }} ({{ student_profile.department.code|default:"CSE" }})</td>
+                                <td style="color: #94a3b8; font-weight: 600;">Department / Branch:</td>
+                                <td style="color: #f8fafc; font-weight: 600;">{{ student_profile.department.name|default:"Computer Science & Engineering" }} ({{ student_profile.department.code|default:"CSE" }})</td>
                             </tr>
                             <tr>
-                                <td class="text-muted fw-semibold">Enrollment / Reg No:</td>
-                                <td>STU-2026-{{ student_profile.pk|default:"101" }}</td>
+                                <td style="color: #94a3b8; font-weight: 600;">Enrollment / Reg No:</td>
+                                <td style="color: #cbd5e1;">STU-2026-{{ student_profile.pk|default:"101" }}</td>
                             </tr>
                             <tr>
-                                <td class="text-muted fw-semibold">Exam Center & Hall:</td>
-                                <td><strong>{{ exam_center|default:"Main Campus, Examination Block-A" }}</strong></td>
+                                <td style="color: #94a3b8; font-weight: 600;">Exam Center & Hall:</td>
+                                <td><strong style="color: #38bdf8;">{{ exam_center|default:"Main Campus, Examination Block-A" }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -98,11 +100,11 @@
             </div>
             <div class="col-md-3 col-4 text-center">
                 {% if student_profile.photo %}
-                    <img src="{{ student_profile.photo.url }}" alt="Candidate Photo" class="rounded border mb-2 shadow" style="width: 105px; height: 120px; object-fit: cover; border-color: var(--primary-color) !important;">
+                    <img src="{{ student_profile.photo.url }}" alt="Candidate Photo" class="rounded-3 border mb-2 shadow" style="width: 105px; height: 120px; object-fit: cover; border-color: var(--primary-color) !important;">
                 {% else %}
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.roll_number }}" alt="Candidate Photo" class="rounded border mb-2 shadow" style="width: 105px; height: 120px; object-fit: cover; border-color: var(--primary-color) !important;">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ student_profile.roll_number }}" alt="Candidate Photo" class="rounded-3 border mb-2 shadow" style="width: 105px; height: 120px; object-fit: cover; border-color: var(--primary-color) !important;">
                 {% endif %}
-                <div class="barcode-box bg-white p-1 rounded">
+                <div class="barcode-box bg-white p-1 rounded-2">
                     <svg id="admit-barcode" data-barcode-val="{{ student_profile.roll_number }}" style="width: 100%; max-height: 34px;"></svg>
                 </div>
             </div>
@@ -113,9 +115,9 @@
             <h5 class="mb-2 text-white fw-bold d-flex align-items-center gap-2" style="font-size: 0.95rem;">
                 <i class="fa-solid fa-calendar-check text-primary"></i> Examination Schedule & Date Sheet
             </h5>
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle text-white m-0" style="font-size: 0.85rem; border-color: var(--border-color);">
-                    <thead style="background: rgba(255,255,255,0.06); color: #818cf8;">
+            <div class="table-responsive rounded-3 border overflow-hidden" style="border-color: rgba(255,255,255,0.1) !important;">
+                <table class="table align-middle text-white m-0" style="font-size: 0.88rem;">
+                    <thead style="background: #0f172a; color: #38bdf8; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid rgba(255, 255, 255, 0.1);">
                         <tr>
                             <th class="text-center" style="width: 5%;">#</th>
                             <th style="width: 15%;">Paper Code</th>
@@ -127,13 +129,13 @@
                     </thead>
                     <tbody>
                         {% for exam in exam_schedule %}
-                        <tr style="background: rgba(15, 23, 42, 0.4);">
-                            <td class="text-center text-muted fw-bold">{{ forloop.counter }}</td>
-                            <td><span class="badge" style="background: rgba(99,102,241,0.15); color: #818cf8;">{{ exam.code }}</span></td>
+                        <tr style="background: rgba(15, 23, 42, 0.6);">
+                            <td class="text-center fw-bold" style="color: #cbd5e1;">{{ forloop.counter }}</td>
+                            <td><span class="badge px-2 py-1" style="background: rgba(14,165,233,0.2); color: #38bdf8; border: 1px solid rgba(14,165,233,0.4); font-weight: 700;">{{ exam.code }}</span></td>
                             <td class="fw-semibold text-white">{{ exam.subject }}</td>
-                            <td><i class="fa-regular fa-calendar-days text-success me-1"></i> {{ exam.date }}</td>
-                            <td style="color: #f59e0b;"><i class="fa-regular fa-clock me-1"></i> {{ exam.time }}</td>
-                            <td class="text-center fw-bold text-info">{{ exam.room }}</td>
+                            <td style="color: #34d399;"><i class="fa-regular fa-calendar-days me-1"></i> {{ exam.date }}</td>
+                            <td style="color: #fbbf24;"><i class="fa-regular fa-clock me-1"></i> {{ exam.time }}</td>
+                            <td class="text-center fw-bold" style="color: #38bdf8;">{{ exam.room }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -142,10 +144,10 @@
         </div>
 
         <!-- INSTRUCTIONS & SIGNATURES -->
-        <div class="row g-3 pt-2 border-top" style="border-color: var(--border-color) !important;">
+        <div class="row g-3 pt-3 border-top" style="border-color: rgba(255,255,255,0.12) !important;">
             <div class="col-md-8">
                 <h6 class="fw-bold text-white mb-2" style="font-size: 0.82rem;"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i> Candidate Exam Guidelines:</h6>
-                <ul class="text-muted m-0 ps-3" style="font-size: 0.75rem; line-height: 1.5;">
+                <ul class="m-0 ps-3" style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.6;">
                     <li>Candidate must produce this original Admit Card along with College ID Card at the exam hall.</li>
                     <li>Electronic devices, mobile phones, smartwatches, and programmable calculators are strictly prohibited.</li>
                     <li>Report to the assigned examination center 20 minutes prior to paper commencement.</li>
@@ -153,9 +155,9 @@
             </div>
             <div class="col-md-4 text-center mt-3">
                 <div class="mb-4 pb-2 border-bottom" style="border-color: rgba(255,255,255,0.2) !important;">
-                    <span class="text-muted" style="font-size: 0.75rem;">Controller of Examinations</span>
+                    <span class="small fw-bold" style="color: #cbd5e1;">Controller of Examinations</span>
                 </div>
-                <div style="font-size: 0.72rem; color: #34d399; font-weight: 700;">
+                <div style="font-size: 0.8rem; color: #34d399; font-weight: 700;">
                     <i class="fa-solid fa-circle-check me-1"></i> Digitally Verified & Issued
                 </div>
             </div>
@@ -163,16 +165,17 @@
 
     </div>
     {% else %}
-    <div class="table-card p-5 text-center my-4" style="background: linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(30,27,75,0.4) 100%); border: 1.5px solid rgba(239,68,68,0.3); border-radius: 16px; max-width: 850px; margin: 0 auto;">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3" style="background: rgba(239,68,68,0.15); width: 80px; height: 80px;">
+    <!-- ADMIT CARD HELD / UNRELEASED NOTICE CARD -->
+    <div class="table-card p-5 text-center my-4" style="background: linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(15,23,42,0.85) 100%); border: 1.5px solid rgba(239,68,68,0.4); border-radius: 16px; max-width: 850px; margin: 0 auto;">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3" style="background: rgba(239,68,68,0.2); width: 80px; height: 80px;">
             <i class="fa-solid fa-id-card-clip fa-3x text-danger"></i>
         </div>
         <h2 class="text-white fw-bold mb-2">Admit Card Not Released Yet</h2>
-        <p class="text-muted fs-6 mx-auto mb-4" style="max-width: 600px;">
+        <p class="fs-6 mx-auto mb-4" style="color: #cbd5e1; max-width: 600px; line-height: 1.6;">
             Examination Hall Tickets / Admit Cards for your department have not been released by the Exam Controller office yet.
         </p>
         <div>
-            <span class="badge bg-danger bg-opacity-20 text-danger px-3 py-2 border border-danger border-opacity-30 fs-6">
+            <span class="badge px-4 py-2 fs-6" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45); font-weight: 700;">
                 <i class="fa-solid fa-ban me-1"></i> Release Status: Pending Exam Controller Approval
             </span>
         </div>
