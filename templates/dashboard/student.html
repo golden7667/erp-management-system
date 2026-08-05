@@ -173,8 +173,8 @@
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-calendar-check" style="color: var(--color-emerald);"></i> ATTENDANCE</span>
-                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald); font-size: 0.75rem;">Active Sem</span>
+                <span style="font-size: 0.85rem; font-weight: 700; color: #34d399;"><i class="fa-solid fa-calendar-check me-1" style="color: var(--color-emerald);"></i> ATTENDANCE</span>
+                <span class="badge px-3 py-1" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45); font-weight: 700; font-size: 0.78rem;">Active Sem</span>
             </div>
             <div class="my-3">
                 <h2 style="font-size: 2.2rem; font-weight: 800; margin: 0; color: var(--text-primary);">{{ student_profile.attendance_percentage }}%</h2>
@@ -182,11 +182,11 @@
                     <div class="progress-bar" role="progressbar" style="width: {{ student_profile.attendance_percentage }}%; background: var(--color-emerald); border-radius: 3px;" aria-valuenow="{{ student_profile.attendance_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
-            <span class="text-muted" style="font-size: 0.8rem;">
+            <span style="font-size: 0.85rem; color: #cbd5e1;">
                 {% if student_profile.attendance_percentage >= 75.0 %}
-                    <i class="fa-solid fa-circle-check" style="color: var(--color-emerald);"></i> Safe: Above 75% requirement
+                    <i class="fa-solid fa-circle-check me-1" style="color: var(--color-emerald);"></i> Safe: Above 75% requirement
                 {% else %}
-                    <i class="fa-solid fa-triangle-exclamation" style="color: var(--color-amber);"></i> Warning: Below 75% requirement
+                    <i class="fa-solid fa-triangle-exclamation me-1" style="color: var(--color-amber);"></i> Warning: Below 75% requirement
                 {% endif %}
             </span>
         </div>
@@ -196,8 +196,8 @@
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-chart-bar" style="color: var(--color-blue);"></i> SEMESTER RESULT</span>
-                <span class="badge" style="background: rgba(14, 165, 233, 0.1); color: var(--color-blue); font-size: 0.75rem;">GPA</span>
+                <span style="font-size: 0.85rem; font-weight: 700; color: #38bdf8;"><i class="fa-solid fa-chart-bar me-1" style="color: var(--color-blue);"></i> SEMESTER RESULT</span>
+                <span class="badge px-3 py-1" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; border: 1.5px solid rgba(14, 165, 233, 0.45); font-weight: 700; font-size: 0.78rem;">GPA</span>
             </div>
             <div class="my-3">
                 <h2 style="font-size: 2.2rem; font-weight: 800; margin: 0; color: var(--text-primary);">{{ student_profile.semester_result_gpa }} / 10.0</h2>
@@ -205,22 +205,22 @@
                     <div class="progress-bar" role="progressbar" style="width: {% widthratio student_profile.semester_result_gpa 1 10 %}%; background: var(--color-blue); border-radius: 3px;" aria-valuenow="{{ student_profile.semester_result_gpa }}" aria-valuemin="0" aria-valuemax="10"></div>
                 </div>
             </div>
-            <span class="text-muted" style="font-size: 0.8rem;"><i class="fa-solid fa-award" style="color: var(--color-blue);"></i> Standing: Excellent Academic Status</span>
+            <span style="font-size: 0.85rem; color: #cbd5e1;"><i class="fa-solid fa-award me-1" style="color: var(--color-blue);"></i> Standing: Excellent Academic Status</span>
         </div>
     </div>
 
     <!-- Exam Admit Card Card -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md); border: 1.5px solid rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(14, 22, 38, 0.9) 100%);">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md); border: 1.5px solid rgba(245, 158, 11, 0.45); background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(14, 22, 38, 0.95) 100%);">
             <div class="brand d-flex align-items-center justify-content-between">
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-id-card-clip" style="color: #f59e0b;"></i> EXAM ADMIT CARD</span>
-                <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30" style="font-size: 0.75rem;">August 2026</span>
+                <span style="font-size: 0.85rem; font-weight: 700; color: #fbbf24;"><i class="fa-solid fa-id-card-clip me-1" style="color: #f59e0b;"></i> EXAM ADMIT CARD</span>
+                <span class="badge px-3 py-1" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45); font-weight: 700; font-size: 0.78rem;">August 2026</span>
             </div>
             <div class="my-3">
-                <h4 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: #fbbf24;">Exam Hall Ticket</h4>
-                <p class="text-muted" style="font-size: 0.8rem; margin: 4px 0 0 0;">End-Semester Theory Examinations</p>
+                <h4 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: #ffffff;">Exam Hall Ticket</h4>
+                <p style="font-size: 0.85rem; margin: 4px 0 0 0; color: #cbd5e1;">End-Semester Theory Examinations</p>
             </div>
-            <a href="{% url 'my_admit_card' %}?student_id={{ student_profile.id }}" class="btn btn-warning btn-sm w-100 fw-bold text-dark shadow-sm">
+            <a href="{% url 'my_admit_card' %}?student_id={{ student_profile.id }}" class="btn btn-warning btn-sm w-100 fw-bold shadow-sm" style="background: #f59e0b; border-color: #f59e0b; color: #0f172a;">
                 <i class="fa-solid fa-print me-1"></i> View & Print Admit Card
             </a>
         </div>
@@ -230,24 +230,24 @@
     <div class="col-md-6 col-lg-6 mb-4">
         <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md);">
             <div class="brand d-flex align-items-center justify-content-between">
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-credit-card" style="color: var(--color-violet);"></i> SEMESTER FEE</span>
+                <span style="font-size: 0.85rem; font-weight: 700; color: #c084fc;"><i class="fa-solid fa-credit-card me-1" style="color: var(--color-violet);"></i> SEMESTER FEE</span>
                 {% if student_profile.semester_fee_status == 'PAID' %}
-                    <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--color-emerald); font-size: 0.75rem;">Paid</span>
+                    <span class="badge px-3 py-1" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45); font-weight: 700; font-size: 0.78rem;">Paid</span>
                 {% elif student_profile.semester_fee_status == 'PENDING' %}
-                    <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--color-amber); font-size: 0.75rem;">Pending</span>
+                    <span class="badge px-3 py-1" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45); font-weight: 700; font-size: 0.78rem;">Pending</span>
                 {% else %}
-                    <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 0.75rem;">Overdue</span>
+                    <span class="badge px-3 py-1" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45); font-weight: 700; font-size: 0.78rem;">Overdue</span>
                 {% endif %}
             </div>
             <div class="my-3">
                 <h2 style="font-size: 2.0rem; font-weight: 800; margin: 0; color: var(--text-primary);">₹{{ student_profile.semester_fee_amount }}</h2>
-                <p class="text-muted" style="font-size: 0.8rem; margin: 4px 0 0 0;">Semester Tuition Fee</p>
+                <p style="font-size: 0.85rem; margin: 4px 0 0 0; color: #cbd5e1;">Semester Tuition Fee</p>
             </div>
-            <span class="text-muted" style="font-size: 0.8rem;">
+            <span style="font-size: 0.85rem; color: #cbd5e1;">
                 {% if student_profile.semester_fee_status == 'PAID' %}
-                    <i class="fa-solid fa-circle-check" style="color: var(--color-emerald);"></i> No outstanding dues
+                    <i class="fa-solid fa-circle-check me-1" style="color: var(--color-emerald);"></i> No outstanding dues
                 {% else %}
-                    <i class="fa-solid fa-circle-info" style="color: var(--color-amber);"></i> Due: Next 15 days
+                    <i class="fa-solid fa-circle-info me-1" style="color: var(--color-amber);"></i> Due: Next 15 days
                 {% endif %}
             </span>
         </div>
@@ -255,17 +255,17 @@
 
     <!-- Exam Form Fill-Up Card -->
     <div class="col-md-6 col-lg-6 mb-4">
-        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md); background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(30,27,75,0.4) 100%); border: 1px solid rgba(245,158,11,0.3) !important;">
+        <div class="table-card h-100 p-4 d-flex flex-column justify-content-between" style="position: relative; overflow: hidden; min-height: 180px; border-radius: var(--border-radius-md); background: linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(30,27,75,0.6) 100%); border: 1.5px solid rgba(245,158,11,0.45) !important;">
             <div class="brand d-flex align-items-center justify-content-between">
                 <span class="fw-bold" style="font-size: 0.85rem; color: #fbbf24;"><i class="fa-solid fa-file-signature me-1"></i> EXAM FORM FILL-UP</span>
-                <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30" style="font-size: 0.75rem;">Session 2026-2027</span>
+                <span class="badge px-3 py-1" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45); font-weight: 700; font-size: 0.78rem;">Session 2026-2027</span>
             </div>
             <div class="my-3">
-                <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: #fff; line-height: 1.4;">End-Semester Examinations</h4>
-                <p class="text-muted" style="font-size: 0.8rem; margin: 4px 0 0 0;">Fill application & issue hall ticket</p>
+                <h4 style="font-size: 1.15rem; font-weight: 800; margin: 0; color: #ffffff; line-height: 1.4;">End-Semester Examinations</h4>
+                <p style="font-size: 0.85rem; margin: 4px 0 0 0; color: #cbd5e1;">Fill application & issue hall ticket</p>
             </div>
             <div>
-                <a href="{% url 'student_exam_form' %}" class="btn btn-warning btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
+                <a href="{% url 'student_exam_form' %}" class="btn btn-warning btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm" style="background: #f59e0b; border-color: #f59e0b; color: #0f172a;">
                     <i class="fa-solid fa-pen-to-square"></i> Fill Exam Registration Form
                 </a>
             </div>

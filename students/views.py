@@ -303,6 +303,7 @@ def student_exam_form(request):
 
     existing_forms = ExamFormRegistration.objects.filter(student=student)
     latest_form = existing_forms.first()
+    control = ExamPublishControl.get_control_for(department=student.department, semester=1)
 
     default_subjects = [
         "CS-501: Data Structures & Algorithms",
@@ -313,6 +314,10 @@ def student_exam_form(request):
     ]
 
     if request.method == 'POST':
+        if not control.exam_form_open:
+            messages.error(request, "Examination Registration Form Fill-Up is currently HELD / CLOSED by the Examination Controller.")
+            return redirect('student_exam_form')
+
         semester = request.POST.get('semester', 1)
         exam_type = request.POST.get('exam_type', 'REGULAR')
         academic_session = request.POST.get('academic_session', '2026-2027')
@@ -323,22 +328,21 @@ def student_exam_form(request):
         if custom_subjects:
             all_subjects_str = f"{all_subjects_str}, {custom_subjects}" if all_subjects_str else custom_subjects
 
-        if not all_subjects_str:
-            all_subjects_str = ", ".join(default_subjects)
-
-        form_entry = ExamFormRegistration.objects.create(
+        txn_id = f"TXN-ERP-{student.roll_number}-{academic_session[:4]}"
+        
+        ExamFormRegistration.objects.create(
             student=student,
+            academic_session=academic_session,
             semester=semester,
             exam_type=exam_type,
-            academic_session=academic_session,
-            subjects_list=all_subjects_str,
+            subjects_list=all_subjects_str or "Regular Semester Subjects",
             fee_paid=True,
             amount_paid=1200.00,
-            transaction_id=f"TXN-ERP-{student.roll_number}-2026",
-            status='APPROVED',
+            transaction_id=txn_id,
+            status='PENDING'
         )
 
-        messages.success(request, f"Examination Registration Form #{form_entry.id} submitted successfully! Your Admit Card is now available for download.")
+        messages.success(request, f"Examination Registration Form for Semester {semester} submitted successfully! Status: Pending Controller Verification.")
         return redirect('student_exam_form')
 
     return render(request, 'students/exam_form.html', {
@@ -346,6 +350,5 @@ def student_exam_form(request):
         'existing_forms': existing_forms,
         'latest_form': latest_form,
         'default_subjects': default_subjects,
+        'control': control,
     })
-
-

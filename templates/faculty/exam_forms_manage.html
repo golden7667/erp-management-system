@@ -9,7 +9,7 @@
         <h1 class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-list-check text-primary"></i> Examination Form Submissions Ledger
         </h1>
-        <p class="subtitle text-muted m-0">Review, verify eligibility, approve, or reject student examination registration applications.</p>
+        <p class="subtitle text-muted m-0">Review, verify eligibility, inspect details, approve, or reject student examination registration applications.</p>
     </div>
     <div>
         <a href="{% url 'faculty_results_manage' %}" class="btn btn-outline-primary d-flex align-items-center gap-2">
@@ -18,15 +18,52 @@
     </div>
 </div>
 
+<!-- Filter Bar for Semester & Form Status & Search -->
+<div class="filter-card mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small fw-bold text-uppercase" style="color: #94a3b8; font-size: 0.78rem; letter-spacing: 0.5px;">Filter by Semester</label>
+            <select name="semester" class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" onchange="this.form.submit()">
+                <option value="">All Semesters</option>
+                {% for sem in "12345678" %}
+                <option value="{{ sem }}" {% if selected_semester == sem %}selected{% endif %}>Semester {{ sem }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label small fw-bold text-uppercase" style="color: #94a3b8; font-size: 0.78rem; letter-spacing: 0.5px;">Application Status</label>
+            <select name="status" class="form-select" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                <option value="PENDING" {% if selected_status == 'PENDING' %}selected{% endif %}>Pending Verification</option>
+                <option value="APPROVED" {% if selected_status == 'APPROVED' %}selected{% endif %}>Approved & Verified</option>
+                <option value="REJECTED" {% if selected_status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+            </select>
+        </div>
+
+        <div class="col-md-5">
+            <label class="form-label small fw-bold text-uppercase" style="color: #94a3b8; font-size: 0.78rem; letter-spacing: 0.5px;">Search Student</label>
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" placeholder="Roll number or student name..." value="{{ query }}">
+                <button type="submit" class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </div>
+
+        <div class="col-md-1">
+            <a href="{% url 'faculty_exam_forms_manage' %}" class="btn btn-outline-secondary w-100" title="Reset Filters"><i class="fa-solid fa-rotate-left"></i></a>
+        </div>
+    </form>
+</div>
+
 <div class="table-card p-0 overflow-hidden">
     <div class="card-header p-3 border-bottom d-flex justify-content-between align-items-center" style="background: var(--bg-secondary);">
-        <h4 class="text-white m-0 font-size-16"><i class="fa-solid fa-file-invoice text-emerald me-2"></i> All Student Form Registrations</h4>
-        <span class="badge bg-primary bg-opacity-20 text-primary">{{ exam_forms|length }} Total Applications</span>
+        <h4 class="text-white m-0 font-size-16"><i class="fa-solid fa-file-invoice text-emerald me-2"></i> Student Form Registrations Ledger</h4>
+        <span class="badge px-3 py-2" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; border: 1.5px solid rgba(14, 165, 233, 0.45); font-weight: 700;">{{ exam_forms|length }} Total Applications</span>
     </div>
 
     <div class="table-responsive p-3">
         <table class="table align-middle table-hover m-0">
-            <thead class="table-dark" style="background: #0f172a; font-size: 0.8rem; text-transform: uppercase; color: #94a3b8;">
+            <thead class="table-dark" style="background: #0f172a; font-size: 0.82rem; text-transform: uppercase; color: #38bdf8; border-bottom: 2px solid rgba(255, 255, 255, 0.1);">
                 <tr>
                     <th>Form #</th>
                     <th>Student Name</th>
@@ -48,28 +85,28 @@
                         <td>
                             <strong class="text-white d-block">{{ form_rec.student.first_name }} {{ form_rec.student.last_name }}</strong>
                         </td>
-                        <td><code class="fw-bold text-primary">{{ form_rec.student.roll_number }}</code></td>
-                        <td>{{ form_rec.student.department.name|default:"Unassigned" }}</td>
+                        <td><code class="fw-bold" style="color: #38bdf8;">{{ form_rec.student.roll_number }}</code></td>
+                        <td style="color: #cbd5e1;">{{ form_rec.student.department.name|default:"Unassigned" }}</td>
                         <td class="text-center"><span class="badge bg-secondary bg-opacity-30 text-white">Sem {{ form_rec.semester }}</span></td>
-                        <td class="text-center"><span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-30">{{ form_rec.get_exam_type_display }}</span></td>
+                        <td class="text-center"><span class="badge px-2 py-1" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.45); font-weight: 700;">{{ form_rec.get_exam_type_display }}</span></td>
                         <td class="text-center">
                             {% if form_rec.fee_paid %}
-                                <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30">Paid (₹{{ form_rec.amount_paid }})</span>
+                                <span class="badge px-2 py-1" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); font-weight: 700;">Paid (₹{{ form_rec.amount_paid }})</span>
                             {% else %}
-                                <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-30">Pending Fee</span>
+                                <span class="badge px-2 py-1" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); font-weight: 700;">Pending Fee</span>
                             {% endif %}
                         </td>
                         <td class="text-center">
                             {% if form_rec.status == 'APPROVED' %}
-                                <span class="badge px-3 py-2 fs-6" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45);">
+                                <span class="badge px-3 py-2 fs-6" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45); font-weight: 700;">
                                     <i class="fa-solid fa-circle-check me-1"></i> APPROVED
                                 </span>
                             {% elif form_rec.status == 'PENDING' %}
-                                <span class="badge px-3 py-2 fs-6" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45);">
+                                <span class="badge px-3 py-2 fs-6" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45); font-weight: 700;">
                                     <i class="fa-solid fa-clock me-1"></i> PENDING
                                 </span>
                             {% else %}
-                                <span class="badge px-3 py-2 fs-6" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45);">
+                                <span class="badge px-3 py-2 fs-6" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45); font-weight: 700;">
                                     <i class="fa-solid fa-circle-xmark me-1"></i> REJECTED
                                 </span>
                             {% endif %}
@@ -77,12 +114,17 @@
                         <td style="color: #cbd5e1; font-size: 0.85rem;">{{ form_rec.submitted_at|date:"M d, Y - h:i A" }}</td>
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-1">
+                                <!-- VIEW FORM MODAL TRIGGER -->
+                                <button type="button" class="btn btn-sm btn-outline-info fw-bold" data-bs-toggle="modal" data-bs-target="#viewFormModal{{ form_rec.id }}" title="View Form Details">
+                                    <i class="fa-solid fa-eye me-1"></i> View Form
+                                </button>
+
                                 {% if form_rec.status != 'APPROVED' %}
                                 <form method="post" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="approve">
                                     <input type="hidden" name="form_id" value="{{ form_rec.id }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Approve Form">
+                                    <button type="submit" class="btn btn-sm btn-outline-success fw-bold" title="Approve Form">
                                         <i class="fa-solid fa-check"></i> Approve
                                     </button>
                                 </form>
@@ -93,7 +135,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="reject">
                                     <input type="hidden" name="form_id" value="{{ form_rec.id }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Reject Form">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning fw-bold" style="border-color: #f59e0b; color: #fbbf24;" title="Reject Form">
                                         <i class="fa-solid fa-ban"></i> Reject
                                     </button>
                                 </form>
@@ -107,6 +149,123 @@
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
+                            </div>
+
+                            <!-- VIEW EXAMINATION FORM MODAL -->
+                            <div class="modal fade text-start" id="viewFormModal{{ form_rec.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+                                        <div class="modal-header border-bottom" style="border-color: var(--border-color) !important;">
+                                            <h5 class="modal-title text-white">
+                                                <i class="fa-solid fa-file-signature text-primary me-2"></i> Official Examination Form #{{ form_rec.id }}
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <!-- Student Banner inside Modal -->
+                                            <div class="p-3 mb-4 rounded-3 border d-flex align-items-center justify-content-between" style="background: rgba(15, 23, 42, 0.7); border-color: rgba(255,255,255,0.12) !important;">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    {% if form_rec.student.photo %}
+                                                        <img src="{{ form_rec.student.photo.url }}" class="rounded-circle border" style="width: 60px; height: 60px; object-fit: cover;" alt="Photo">
+                                                    {% else %}
+                                                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ form_rec.student.user.username }}" class="rounded-circle border" style="width: 60px; height: 60px; object-fit: cover;" alt="Photo">
+                                                    {% endif %}
+                                                    <div>
+                                                        <h4 class="text-white m-0 font-size-18 fw-bold">{{ form_rec.student.first_name }} {{ form_rec.student.last_name }}</h4>
+                                                        <span class="small" style="color: #cbd5e1;">Roll No: <code style="color: #38bdf8; font-weight: 700;">{{ form_rec.student.roll_number }}</code> | Dept: <strong style="color: #f8fafc;">{{ form_rec.student.department.name|default:"Unassigned" }}</strong></span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span class="badge px-3 py-2" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45); font-weight: 700;">
+                                                        Attendance: {{ form_rec.student.attendance_percentage }}%
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-3 mb-4">
+                                                <div class="col-md-4">
+                                                    <div class="p-3 rounded border" style="background: var(--bg-tertiary); border-color: var(--border-color) !important;">
+                                                        <span class="small fw-bold text-uppercase d-block" style="color: #94a3b8;">Academic Session</span>
+                                                        <strong class="text-white font-size-16">{{ form_rec.academic_session }}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="p-3 rounded border" style="background: var(--bg-tertiary); border-color: var(--border-color) !important;">
+                                                        <span class="small fw-bold text-uppercase d-block" style="color: #94a3b8;">Registered Semester</span>
+                                                        <strong class="text-white font-size-16">Semester {{ form_rec.semester }}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="p-3 rounded border" style="background: var(--bg-tertiary); border-color: var(--border-color) !important;">
+                                                        <span class="small fw-bold text-uppercase d-block" style="color: #94a3b8;">Examination Category</span>
+                                                        <strong style="color: #38bdf8;" class="font-size-16">{{ form_rec.get_exam_type_display }}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <h6 class="fw-bold mb-2" style="color: #38bdf8;"><i class="fa-solid fa-book-open me-2"></i> Registered Examination Subjects</h6>
+                                                <div class="p-3 rounded border" style="background: var(--bg-tertiary); color: #f8fafc; font-size: 0.95rem; line-height: 1.6;">
+                                                    {{ form_rec.subjects_list }}
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded border" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3) !important;">
+                                                        <span class="small fw-bold text-uppercase d-block" style="color: #34d399;">Registration Fee Payment</span>
+                                                        <strong class="text-white font-size-16">₹ {{ form_rec.amount_paid }} (PAID)</strong><br>
+                                                        <span class="small" style="color: #cbd5e1;">Txn ID: <code>{{ form_rec.transaction_id }}</code></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded border" style="background: var(--bg-tertiary); border-color: var(--border-color) !important;">
+                                                        <span class="small fw-bold text-uppercase d-block" style="color: #94a3b8;">Form Application Status</span>
+                                                        {% if form_rec.status == 'APPROVED' %}
+                                                            <span class="badge px-3 py-1 mt-1" style="background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1.5px solid rgba(16, 185, 129, 0.45); font-weight: 700;">APPROVED</span>
+                                                        {% elif form_rec.status == 'PENDING' %}
+                                                            <span class="badge px-3 py-1 mt-1" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1.5px solid rgba(245, 158, 11, 0.45); font-weight: 700;">PENDING</span>
+                                                        {% else %}
+                                                            <span class="badge px-3 py-1 mt-1" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1.5px solid rgba(239, 68, 68, 0.45); font-weight: 700;">REJECTED</span>
+                                                        {% endif %}
+                                                        <span class="small d-block mt-1" style="color: #94a3b8;">Submitted: {{ form_rec.submitted_at|date:"M d, Y - h:i A" }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-top d-flex justify-content-between" style="border-color: var(--border-color) !important;">
+                                            <div>
+                                                <a href="{% url 'my_admit_card' %}?student_id={{ form_rec.student.id }}" class="btn btn-outline-warning fw-bold" style="border-color: #f59e0b; color: #fbbf24;" target="_blank">
+                                                    <i class="fa-solid fa-id-card-clip me-1"></i> Open Hall Ticket / Admit Card
+                                                </a>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                {% if form_rec.status != 'APPROVED' %}
+                                                <form method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="approve">
+                                                    <input type="hidden" name="form_id" value="{{ form_rec.id }}">
+                                                    <button type="submit" class="btn btn-success fw-bold">
+                                                        <i class="fa-solid fa-check me-1"></i> Approve Application
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+
+                                                {% if form_rec.status != 'REJECTED' %}
+                                                <form method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to reject this examination form?');">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <input type="hidden" name="form_id" value="{{ form_rec.id }}">
+                                                    <button type="submit" class="btn btn-warning fw-bold" style="background: #f59e0b; border-color: #f59e0b; color: #0f172a;">
+                                                        <i class="fa-solid fa-ban me-1"></i> Reject Application
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>

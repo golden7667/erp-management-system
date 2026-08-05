@@ -308,7 +308,17 @@ def faculty_results_manage(request):
     semester_filter = request.GET.get('semester', '')
     query = request.GET.get('q', '')
 
-    students = Student.objects.filter(department=selected_department).order_by('roll_number') if selected_department else Student.objects.all().order_by('roll_number')
+    all_department_students = Student.objects.filter(department=selected_department).order_by('roll_number') if selected_department else Student.objects.all().order_by('roll_number')
+    students = all_department_students
+
+    # Selected student filter
+    selected_student_id = request.GET.get('student_id', '')
+    if selected_student_id:
+        try:
+            st_id = int(selected_student_id)
+            students = students.filter(pk=st_id)
+        except ValueError:
+            pass
     
     if query:
         students = students.filter(
@@ -349,6 +359,16 @@ def faculty_results_manage(request):
             control.save()
             st = "RELEASED / PUBLISHED" if control.admit_card_published else "HELD / UNPUBLISHED"
             messages.success(request, f"Exam Admit Cards status set to {st} for {selected_department.name if selected_department else 'All Departments'}.")
+            return redirect(request.get_full_path())
+
+        elif action == 'toggle_exam_form_fillup':
+            if not (request.user.is_exam_controller or request.user.is_admin):
+                messages.error(request, "Permission denied. Only Examination Controller or Admin can open/hold exam registration forms.")
+                return redirect(request.get_full_path())
+            control.exam_form_open = not control.exam_form_open
+            control.save()
+            st = "OPEN / ACTIVE" if control.exam_form_open else "HELD / CLOSED"
+            messages.success(request, f"Exam Registration Form Fill-Up status set to {st} for {selected_department.name if selected_department else 'All Departments'}.")
             return redirect(request.get_full_path())
 
         elif action == 'update_exam_info':
@@ -428,6 +448,8 @@ def faculty_results_manage(request):
 
     return render(request, 'faculty/results_manage.html', {
         'students': students,
+        'all_department_students': all_department_students,
+        'selected_student_id': selected_student_id,
         'student_summaries': student_summaries,
         'exam_marks': exam_marks,
         'mark_form': mark_form,
@@ -507,7 +529,28 @@ def faculty_exam_forms_manage(request):
         messages.error(request, "Permission denied.")
         return redirect('dashboard_home')
 
-    exam_forms = ExamFormRegistration.objects.select_related('student', 'student__department').all().order_by('-submitted_at')
+    semester_filter = request.GET.get('semester', '')
+    status_filter = request.GET.get('status', '').strip()
+    query = request.GET.get('q', '').strip()
+
+    exam_forms = ExamFormRegistration.objects.select_related('student').all().order_by('-submitted_at')
+
+    if semester_filter:
+        try:
+            sem_num = int(semester_filter)
+            exam_forms = exam_forms.filter(semester=sem_num)
+        except ValueError:
+            pass
+
+    if status_filter:
+        exam_forms = exam_forms.filter(status=status_filter)
+
+    if query:
+        exam_forms = exam_forms.filter(
+            Q(student__first_name__icontains=query) |
+            Q(student__last_name__icontains=query) |
+            Q(student__roll_number__icontains=query)
+        )
 
     if request.method == 'POST':
         action = request.POST.get('action', '')
@@ -527,10 +570,13 @@ def faculty_exam_forms_manage(request):
             exam_form.delete()
             messages.success(request, f"Deleted Examination Form record #{form_id}.")
 
-        return redirect('faculty_exam_forms_manage')
+        return redirect(request.get_full_path())
 
     return render(request, 'faculty/exam_forms_manage.html', {
-        'exam_forms': exam_forms
+        'exam_forms': exam_forms,
+        'selected_semester': semester_filter,
+        'selected_status': status_filter,
+        'query': query,
     })
 
 

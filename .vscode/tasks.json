@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Django ERP Server",
+            "type": "shell",
+            "command": "python manage.py runserver 0.0.0.0:8000",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Apply Multi-DB Migrations",
+            "type": "shell",
+            "command": "python manage.py migrate; python manage.py migrate --database=students; python manage.py migrate --database=faculty; python manage.py migrate --database=admin",
+            "problemMatcher": []
+        },
+        {
+            "label": "Seed ERP Database",
+            "type": "shell",
+            "command": "python seed_db.py",
+            "problemMatcher": []
+        }
+    ]
+}
